@@ -1,0 +1,35 @@
+#ifndef __XStaticAlloc_H__
+#define __XStaticAlloc_H__
+
+#include <map>
+#include <set>
+
+using namespace std;
+/*
+Description:
+	RAM/SRAM内存管理器/Nand文件系统原理 初级实现
+	map:|time_t|标记区域|记录区域|动态分配区域
+	动态分配区域:[symbol|toUser][ | ]...
+	动态区域中存储字符串作为用途标识
+*/
+
+class XStaticAlloc
+{
+	struct RangeInfo{
+		unsigned short	ri_nStart;
+		unsigned short	ri_nLen;
+	};
+public:
+	void* Alloc(int len);
+	void Free(void* pStart);
+private:
+	unsigned char*		m_pBegin;		//起始地址
+	unsigned			m_nTotalLen;	//总长度
+	unsigned short		m_nFlagLen;		//标记区长度
+	unsigned short 		m_nRecordLen;	//记录区长度
+	map<void*,int>		m_RecordMap;	//已申请记录集合
+	set<RangeInfo>		m_RangeSet;		//可用区间集合
+	//map<char*,void*>	m_UseInfoMap;	//用途记录	
+};
+
+#endif	// XStaticAlloc.h
