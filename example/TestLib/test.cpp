@@ -280,7 +280,7 @@ int main()
 	tCtrl.AddThread(pt1);
 	tCtrl.AddThread(pt2);
 	tCtrl.AddThread(pt3);
-	MyTaskProcess* processor = new MyTaskProcess(&tCtrl);
+	MyTaskProcess* processor = new MyTaskProcess(&tCtrl);//此处不合理
 	pool.Register_taskProcess("test", processor);//TODO:此处待确认内存管理方式
 	if (!pool.init_pool()) {
 		pool.submit_job_req(pt1);
@@ -419,10 +419,10 @@ int main()
 	//tagDB.param._adoParam.m_user = "sa";
 	//tagDB.param._adoParam.m_passwd = "zhubin123";
 	
-	AdoConn* pDBConn = (AdoConn*)(dbPools.GetNewConnect());
+	DBConnect* pDBConn = dbPools.GetNewConnect();
 	pDBConn->InitConnecion(&tagDB);
 	pDBConn->ConnectDB();
-	AdoAccess* pDBAccess = (AdoAccess*)(pDBConn->GetDBAccessProxy());
+	DBAccess* pDBAccess = pDBConn->GetDBAccessProxy();
 	pDBAccess->SetConnect(pDBConn);
 	pDBAccess->InitAccessParam(NULL);
 
@@ -440,10 +440,10 @@ int main()
 	//tagDB.param._adoParam.m_user = "sa";
 	//tagDB.param._adoParam.m_passwd = "zhubin123";
 
-	MysqlConn* pDBConn = (MysqlConn*)(dbPools.GetNewConnect());
+	DBConnect* pDBConn = dbPools.GetNewConnect();
 	pDBConn->InitConnecion(&tagDB);
 	pDBConn->ConnectDB();
-	MysqlAccess* pDBAccess = (MysqlAccess*)(pDBConn->GetDBAccessProxy());
+	DBAccess* pDBAccess = pDBConn->GetDBAccessProxy();
 	pDBAccess->SetConnect(pDBConn);
 	pDBAccess->InitAccessParam(NULL);
 
