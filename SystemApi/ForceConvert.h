@@ -14,4 +14,16 @@ void ForceConvert(ToType& addr,FromType f)//强制类型转换
     addr 	= ut._t;
 }
 
+template<typename T,typename F>
+T ForceCast(const F& fromVal)
+{
+    union
+    {
+		F   _f;
+		T   _t;
+    }ut;
+    ut._f = fromVal;
+    return ut._t;
+}
+
 #endif	//ForceConvert.h
