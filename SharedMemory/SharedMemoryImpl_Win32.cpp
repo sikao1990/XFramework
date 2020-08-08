@@ -1,15 +1,15 @@
-#include "ShareMemoryImpl_Win32.h"
+#include "SharedMemoryImpl_Win32.h"
 #include <windows.h>
 
-ShareMemoryImpl::ShareMemoryImpl():m_hMap(NULL),m_pStart(NULL)
+SharedMemoryImpl::SharedMemoryImpl():m_hMap(NULL),m_pStart(NULL)
 {
 }
 
-bool ShareMemoryImpl::Open(const char* str,int size)const
+bool SharedMemoryImpl::Open(const char* str,int size)const
 {
 	if(NULL!=m_hMap)
 		return false;
-	ShareMemoryImpl* pThis = const_cast<ShareMemoryImpl* >(this);
+	SharedMemoryImpl* pThis = const_cast<SharedMemoryImpl* >(this);
     pThis->m_hMap = ::OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, str);
     if (NULL == m_hMap)
     {
@@ -18,39 +18,39 @@ bool ShareMemoryImpl::Open(const char* str,int size)const
     return true;
 }
 
-bool ShareMemoryImpl::Attach()const
+bool SharedMemoryImpl::Attach()const
 {
 	if(NULL==m_hMap)
 		return false;
-	ShareMemoryImpl* pThis = const_cast<ShareMemoryImpl* >(this);
+	SharedMemoryImpl* pThis = const_cast<SharedMemoryImpl* >(this);
 	pThis->m_pStart = ::MapViewOfFile(m_hMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 	if(NULL==m_pStart)
 		return false;	
 	return true;
 }
 
-void ShareMemoryImpl::Detach()const
+void SharedMemoryImpl::Detach()const
 {
-	ShareMemoryImpl* pThis = const_cast<ShareMemoryImpl* >(this);
+	SharedMemoryImpl* pThis = const_cast<SharedMemoryImpl* >(this);
 	if(NULL!=m_hMap&&NULL!=m_pStart){
 		::UnmapViewOfFile(m_pStart);
 		pThis->m_pStart = NULL;
 	}
 }
 
-void* ShareMemoryImpl::GetAddress()
+void* SharedMemoryImpl::GetAddress()
 {
 	return m_pStart;
 }
 
-const void* ShareMemoryImpl::GetAddress()const
+const void* SharedMemoryImpl::GetAddress()const
 {
 	return m_pStart;
 }
 
-void ShareMemoryImpl::Close()const
+void SharedMemoryImpl::Close()const
 {
-	ShareMemoryImpl* pThis = const_cast<ShareMemoryImpl* >(this);
+	SharedMemoryImpl* pThis = const_cast<SharedMemoryImpl* >(this);
 	if(NULL!=m_hMap)
 	{	::CloseHandle(m_hMap);
 		pThis->m_hMap = NULL;

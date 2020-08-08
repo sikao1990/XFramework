@@ -10,9 +10,10 @@ MemMgr::~MemMgr(){
 	EleNode* pBak = NULL;
 	for(;NULL!=pBegin;pBegin = pBak)
 	{
-		if(NULL==(pBak=pBegin->pNext))
-			break;
+		pBak = pBegin->pNext;
 		destoryImpl(pBegin);
+		if(NULL==pBak)
+			break;
 	}
 }
 
@@ -48,7 +49,7 @@ void* MemMgr::Alloc(int n){
 		int i=0;
 		while(n--){
 			pBegin->pFlag[nIndex+i++]='1';
-			if(nIndex<pBegin->nIndex)pBegin->nIndex=nIndex;
+			if(nIndex+n<pBegin->nIndex)pBegin->nIndex=nIndex+n;
 		}
 		return pBegin->pStart+nIndex*nUnit;
 	}
@@ -72,6 +73,7 @@ void MemMgr::Free(void* p,int n)
 			pBegin->pFlag[nIndex+i] = '0';
 			memset(pBegin->pStart+(nIndex+i++)*nUnit,0,nUnit);
 		}
+		if (nIndex < pBegin->nIndex)pBegin->nIndex = nIndex;
 	}else
 		throw "the MemMgr lib error";
 }
@@ -87,7 +89,7 @@ void MemMgr::destoryImpl(void* p){
 void MemMgr::Expend(char* p,int len){
 	//|EleNode|flagStr|NodeList| => sizeof(EleNode)+x*sizeof(T)+x*sizeof(char)+1 = len;
 	memset(p,0,len);
-	int x = ( len-sizeof(EleNode)-1 )/(sizeof(EleNode)+sizeof(char));
+	int x = ( len-sizeof(EleNode)-1 )/(nUnit+sizeof(char));
 	EleNode** ppEleNode = NULL;
 	if(NULL==pEleHead){
 		pEleHead = (EleNode*)p;
@@ -121,7 +123,7 @@ int MemMgr::FindAvailable(char* p,int n){
 					return pBegin - p;
 				pStart+=1;			
 			}else
-				pStart = pTag,count = 1;
+				pStart = pTag,count = 1, bFlag = false;
 			pTmp = pTag;
 		}
 	}

@@ -6,7 +6,7 @@
 
 class SocketSession;
 class TcpClientImpl;
-class XTcpClient
+class FRAMEWORK_API XTcpClient
 {
 public:
 	XTcpClient();

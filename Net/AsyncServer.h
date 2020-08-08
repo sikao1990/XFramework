@@ -1,8 +1,7 @@
-#ifndef __EpollClient_H__
-#define __EpollClient_H__
+#ifndef __AsyncServer_H__
+#define __AsyncServer_H__
 
-#include "XNetCfg.h"
-#include "EpollDefine.h"
+#include "AsyncNetDefine.h"
 #include "../Thread/Task.h"
 #include "../Thread/TaskProcess.h"
 #include "../Thread/ThreadPoolImpl_Linux.h"
@@ -10,26 +9,25 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/epoll.h>
 #include <pthread.h>
 #include <sys/select.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include <iostream>
 
-#define READTASK 	"0"
-#define WRITETASK	"1"
+using namespace std;
 
-class EpollClient
+class AsyncServer
 {
 	class PostSockReader : public TaskProcess{
 	public:	
-		PostSockReader(DispatchData* pData,EpollClient* pNet):m_data(pData),m_pNet(pNet){}
+		PostSockReader(DispatchData* pData,AsyncServer* pNet):m_data(pData),m_pNet(pNet){}
 		virtual void operator()(Task* task){
 			int rLen = 0;
 			int nCount = 0;
-			EpollRWTask* pNetTask = (EpollRWTask*)task;
+			AsyncNetRWTask* pNetTask = (AsyncNetRWTask*)task;
 			MemNode node;
 			node=m_data->GetAndPopFront(pNetTask->GetClientSock());
 			if(node.Valid()){
@@ -42,8 +40,7 @@ class EpollClient
 						if(EAGAIN == rLen){//缓冲无数据可读
 							if(nCount > 0){
 								node.nTrans = nCount;
-								CPostReq req(node);
-								m_pNet->ProduceNode(req);
+								m_pNet->ProduceNode(node);
 							}else
 								m_data->PushBack(pNetTask->GetClientSock(),node);
 							return;
@@ -55,17 +52,16 @@ class EpollClient
 					}
 					else if(0 == rLen)
 					{
-						printf("client:%d has disconnect\n",pNetTask->GetClientSock());				
-						CPostReq req(node);
-						req.oType = OP_EXIT;
-						req.cSock = pNetTask->GetClientSock();
-						m_pNet->ProduceNode(req);						
+						printf("client:%d has disconnect\n",pNetTask->GetClientSock());
+						m_pNet->FdDel(pNetTask->GetClientSock(), pNetTask->GetServerSock());
+                        //TODO:m_pNet->ProduceNode(req);
 						return ;
 					}else{
 						if(rLen==node.nCount){
 							node.nTrans = node.nCount;
-							CPostReq req(node);
+							SPostReq req(node);
 							req.cSock = pNetTask->GetClientSock();
+							req.sSock = pNetTask->GetServerSock();
 							m_pNet->ProduceNode(req);
 							node.Reset();
 							node=m_data->GetAndPopFront(pNetTask->GetClientSock());
@@ -82,15 +78,15 @@ class EpollClient
 		}
 	private:
 		DispatchData* 	m_data;
-		EpollClient*	m_pNet;
+		AsyncServer*	m_pNet;
 	};
 	class PostSockWriter : public TaskProcess{
 	public:
-		PostSockWriter(DispatchData* pData,EpollClient* pNet):m_data(pData),m_pNet(pNet){}
+		PostSockWriter(DispatchData* pData,AsyncServer* pNet):m_data(pData),m_pNet(pNet){}
 		virtual void operator()(Task* task){
 			int wLen = 0;
 			int nCount = 0;
-			EpollRWTask* pNetTask = (EpollRWTask*)task;
+			AsyncNetRWTask* pNetTask = (AsyncNetRWTask*)task;
 			MemNode node;
 			node=m_data->GetAndPopFront(pNetTask->GetClientSock());
 			if(node.Valid()){
@@ -99,53 +95,51 @@ class EpollClient
 					printf("write for client:%d failed!\n",pNetTask->GetClientSock());
 					m_data->PushBack(pNetTask->GetClientSock(),node);
 					return;						
-				}else if(wLen>0){
+				}else if(wLen>0){//TODO:此处待处理只发送部分数据
 					node.nTrans = wLen;
-					CPostReq req(node);
-					req.cSock = pNetTask->GetClientSock();				
+					SPostReq req(node);
+					req.cSock = pNetTask->GetClientSock();
+					req.sSock = pNetTask->GetServerSock();					
 					m_pNet->ProduceNode(req);
 				}
 			}
 		}	
 	private:
 		DispatchData* 	m_data;
-		EpollClient*	m_pNet;
+		AsyncServer*	m_pNet;
 	};
 public:
-	EpollClient(int nthPool);
-	~EpollClient();
-	bool Init(const char* Ip,int port);
-	bool ReConnect();
-	bool Stop();
-	void postQuest(int sock,int type,const MemNode& node);
-	bool GetQueueComplateStatus(int& sock,CPostReq& pNode,int& transBytes);
-	hSockFd getSock()const{ return m_serSocket;}
+	AsyncServer();
+	AsyncServer(int nthPool);
+	~AsyncServer();
+	bool Init(int port);
+	virtual bool Stop();
+	void postQuest(int sock,const      jobtype& type,const MemNode& node);
+	bool GetQueueComplateStatus(int& sock,SPostReq& pNode,int& transBytes);
 protected:
-	void ProduceNode(const CPostReq& node);
-	void epollWait();
+	void ProduceNode(const SPostReq& node);
 	int InitSocket(const char* ip,int port,int type);
-	int epoll_init(int int_sfd);
-	int epoll_add(int int_fd, int int_epfd);
-	int epoll_del(int int_fd, int int_epfd);
+	virtual void HandleThread()= 0;
+	virtual int AsyncInit(int int_sfd)= 0;
+	virtual int FdAdd(int int_fd, int int_epfd,bool bMonWrite = false)= 0;
+	virtual int FdDel(int int_fd, int int_epfd)= 0;
+	int on_accept_callback(int int_sfd,string& ip, int int_epfd);	
 private:
-	static void* epollThread(void* );
-private:
+	static void* AsyncThread(void* );
+protected:
 	ThreadPoolImpl	m_thPool;
 	int 			m_serSocket;
-	int				m_hEpoll;
 	bool			m_bRun;
 	pthread_t		m_hThread;
 	
 	pthread_mutex_t m_lock;
 	pthread_cond_t 	m_condp;
-	list<CPostReq>	m_data;//生产者消费者->对外接口
+	list<SPostReq>	m_data;//生产者消费者->对外接口
 	
 	DispatchData	m_ReadQue;
 	DispatchData	m_WriteQue;
 	PostSockReader*	m_pReader;
 	PostSockWriter* m_pWriter;
-	std::string		m_ip;
-	int 			m_port;
 };
 
-#endif	// EpollClient.h
+#endif	// AsyncServer.h

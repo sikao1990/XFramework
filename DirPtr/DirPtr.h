@@ -7,12 +7,8 @@
 using namespace std;
 class XMem;
 class DirPtrImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API DirPtr
-#else
-class DirPtr
-#endif
 {
 protected:
 	typedef bool (DirPtr::*Pfunc)(const string& filter,int type)const;

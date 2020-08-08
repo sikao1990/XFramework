@@ -35,7 +35,7 @@ public:
 		WaitForSingleObject(m_hThread,INFINITE);
 		m_hThread = NULL;
 	}
-	unsigned GetThreadID(){ return m_dwThreadID; }
+	size_t GetThreadID(){ return (size_t)m_dwThreadID; }
 	bool IsRuning(){ return m_bRuning; }
 	static void mSleep(unsigned ms){ Sleep(ms); }
 	ThreadImpl(const ThreadImpl& th){

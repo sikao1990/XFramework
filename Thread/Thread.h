@@ -2,12 +2,9 @@
 #define __Thread_H__
 
 class ThreadPri;
-#ifdef	WIN32
-#include "../stdafx.h"
+
+#include "../XDefine.h"
 class FRAMEWORK_API Thread
-#else
-class Thread
-#endif
 {
 public:
 	Thread();

@@ -3,6 +3,8 @@
 #include <string.h>
 #include "../SystemApi/TimeInfo.h"
 
+#define TIMERPRECISION      (5) //定时器精度 5ms毫秒(cpu 2.0%) 1ms毫秒(cpu 6.0%)
+
 struct TimeSet
 {
 	unsigned short	nStart;		//ms
@@ -11,12 +13,8 @@ struct TimeSet
 		,nInterval(internal){}	
 };
 
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API AbstractTimer
-#else
-class AbstractTimer
-#endif
 {
 public:
 	AbstractTimer(int Start=0,int internal=0):m_nCur(0),m_param(Start,internal){}
@@ -33,7 +31,7 @@ public:
 	void ResetState(){ nFinish = 1; }
 	bool IsTimeout()const{ return nFinish>1; }
 	void SetStartTime(){ m_nCur = TimeInfo::getTimeStamp();}
-	int Increment() { return ++nCount; }
+	int Increment() { return ++nCount*TIMERPRECISION; }
 	void RestCount() { nCount = 0; }
 	void SetFinish() { nFinish = 2; }
 	int GetState()const { return nFinish; }

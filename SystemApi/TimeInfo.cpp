@@ -93,9 +93,13 @@ const TimeInfo TimeInfo::operator+(const time_t& s)const
 	tt.tm_sec	= ti_sec;
 	tmp = mktime(&tt);
 	tmp +=s;
-	
-	struct tm* pt=localtime(&tmp);
-	return TimeInfo(pt->tm_year+1900,pt->tm_mon + 1,pt->tm_mday,pt->tm_hour,pt->tm_min,pt->tm_sec);
+	struct tm localtm;
+#ifdef WIN32
+	localtime_s(&localtm,&tmp);
+#else
+	localtime_r(&tmp, &localtm);
+#endif
+	return TimeInfo(localtm.tm_year+1900, localtm.tm_mon + 1, localtm.tm_mday, localtm.tm_hour, localtm.tm_min, localtm.tm_sec);
 }
 
 const TimeInfo TimeInfo::operator-(const time_t& s)const
@@ -110,9 +114,13 @@ const TimeInfo TimeInfo::operator-(const time_t& s)const
 	tt.tm_sec	= ti_sec;
 	tmp = mktime(&tt);
 	tmp -=s;
-	
-	struct tm* pt=localtime(&tmp);
-	return TimeInfo(pt->tm_year+1900,pt->tm_mon + 1,pt->tm_mday,pt->tm_hour,pt->tm_min,pt->tm_sec);	
+	struct tm localtm;
+#ifdef WIN32
+	localtime_s(&localtm, &tmp);
+#else
+	localtime_r(&tmp, &localtm);
+#endif
+	return TimeInfo(localtm.tm_year+1900, localtm.tm_mon + 1, localtm.tm_mday, localtm.tm_hour, localtm.tm_min, localtm.tm_sec);
 }
 	
 TimeInfo& TimeInfo::operator+=(const time_t& s)
@@ -127,14 +135,20 @@ TimeInfo& TimeInfo::operator+=(const time_t& s)
 	tt.tm_sec	= ti_sec;
 	tmp = mktime(&tt);
 	tmp +=s;
-	
-	struct tm* pt=localtime(&tmp);
-	ti_year = pt->tm_year - 100;
-	ti_mon	= pt->tm_mon + 1;
-	ti_day	= pt->tm_mday;
-	ti_hour	= pt->tm_hour;
-	ti_min	= pt->tm_min;
-	ti_sec	= pt->tm_sec;
+
+	struct tm localtm;
+#ifdef WIN32
+	localtime_s(&localtm, &tmp);
+#else
+	localtime_r(&tmp, &localtm);
+#endif
+
+	ti_year = localtm.tm_year - 100;
+	ti_mon	= localtm.tm_mon + 1;
+	ti_day	= localtm.tm_mday;
+	ti_hour	= localtm.tm_hour;
+	ti_min	= localtm.tm_min;
+	ti_sec	= localtm.tm_sec;
 	return *this;
 }
 
@@ -151,13 +165,18 @@ TimeInfo& TimeInfo::operator-=(const time_t& s)
 	tmp = mktime(&tt);
 	tmp -=s;
 	
-	struct tm* pt=localtime(&tmp);
-	ti_year = pt->tm_year - 100;
-	ti_mon	= pt->tm_mon + 1;
-	ti_day	= pt->tm_mday;
-	ti_hour	= pt->tm_hour;
-	ti_min	= pt->tm_min;
-	ti_sec	= pt->tm_sec;
+	struct tm localtm;
+#ifdef WIN32
+	localtime_s(&localtm, &tmp);
+#else
+	localtime_r(&tmp, &localtm);
+#endif
+	ti_year = localtm.tm_year - 100;
+	ti_mon	= localtm.tm_mon + 1;
+	ti_day	= localtm.tm_mday;
+	ti_hour	= localtm.tm_hour;
+	ti_min	= localtm.tm_min;
+	ti_sec	= localtm.tm_sec;
 	return *this;
 }
 
@@ -204,13 +223,18 @@ void TimeInfo::AddDay(int d)
 	tmp = mktime(&tt);
 	tmp +=d*24*3600;
 	
-	struct tm* pt=localtime(&tmp);
-	ti_year = pt->tm_year - 100;
-	ti_mon	= pt->tm_mon+1;
-	ti_day	= pt->tm_mday;
-	ti_hour	= pt->tm_hour;
-	ti_min	= pt->tm_min;
-	ti_sec	= pt->tm_sec;
+	struct tm localtm;
+#ifdef WIN32
+	localtime_s(&localtm, &tmp);
+#else
+	localtime_r(&tmp, &localtm);
+#endif
+	ti_year = localtm.tm_year - 100;
+	ti_mon	= localtm.tm_mon+1;
+	ti_day	= localtm.tm_mday;
+	ti_hour	= localtm.tm_hour;
+	ti_min	= localtm.tm_min;
+	ti_sec	= localtm.tm_sec;
 }
 
 void TimeInfo::AddMonth(int mon)
@@ -251,13 +275,18 @@ void TimeInfo::AddYear(int y)
 void TimeInfo::Update()
 {
 	time_t s = time(0);
-	struct tm* pt=localtime(&s);
-	ti_year = pt->tm_year - 100;
-	ti_mon	= pt->tm_mon + 1;
-	ti_day	= pt->tm_mday;
-	ti_hour	= pt->tm_hour;
-	ti_min	= pt->tm_min;
-	ti_sec	= pt->tm_sec;		
+	struct tm localtm;
+#ifdef WIN32
+	localtime_s(&localtm, &s);
+#else
+	localtime_r(&s, &localtm);
+#endif
+	ti_year = localtm.tm_year - 100;
+	ti_mon	= localtm.tm_mon + 1;
+	ti_day	= localtm.tm_mday;
+	ti_hour	= localtm.tm_hour;
+	ti_min	= localtm.tm_min;
+	ti_sec	= localtm.tm_sec;
 }
 
 unsigned TimeInfo::GetTimeOfNumber()const

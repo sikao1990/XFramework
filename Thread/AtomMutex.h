@@ -3,12 +3,8 @@
 
 class XMem;
 class AtomMutexImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API AtomMutex
-#else
-class AtomMutex
-#endif
 {
 public:
 	AtomMutex(XMem* pMem=0);

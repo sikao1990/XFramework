@@ -1,11 +1,11 @@
-#ifndef __ShareMemoryImpl_H__
-#define __ShareMemoryImpl_H__
+#ifndef __SharedMemoryImpl_H__
+#define __SharedMemoryImpl_H__
 #include <windows.h>
 
-class ShareMemoryImpl
+class SharedMemoryImpl
 {
 public:
-	ShareMemoryImpl();
+	SharedMemoryImpl();
 	bool Open(const char* str,int size)const;
 	bool Attach()const;
 	void* GetAddress();
@@ -13,11 +13,11 @@ public:
 	void Detach()const;
 	void Close()const;
 private:
-	ShareMemoryImpl(const ShareMemoryImpl&);
-	ShareMemoryImpl& operator=(const ShareMemoryImpl&);		
+	SharedMemoryImpl(const SharedMemoryImpl&);
+	SharedMemoryImpl& operator=(const SharedMemoryImpl&);
 private:
 	HANDLE 	m_hMap;
 	void*	m_pStart;
 };
 
-#endif	// ShareMemoryImpl.h
+#endif	// SharedMemoryImpl.h

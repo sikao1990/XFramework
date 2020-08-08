@@ -37,7 +37,7 @@ int DBAccess::Query(const char* sql, list< list<DBField> >& result)
 	return 0; 
 }
 
-int DBAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, TagType type, list< list<DBField> >& result, ...)
+int DBAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList,list< list<DBField> >& result, TagType type, ...)
 { 
 	if (!m_connect->IsValidConnect())
 		return -1;
@@ -65,11 +65,12 @@ char* DBAccess::Fromat(const char* sql, char* destr, int totalCount,vector<ArgTy
 	for (int i = 0; i < argTypeList.size(); i++)
 	{
 		if (1 == args.size())
-			strcpy_s(tmpFromat,strlen(sql),sql);
+			strcpy(tmpFromat/*,strlen(sql)*/,sql);
+			
 		else if (i == args.size() - 1)
-			strncpy_s(tmpFromat, args[i].pStart, sql + strlen(sql) - args[i].pStart);
+			strncpy(tmpFromat, args[i].pStart, sql + strlen(sql) - args[i].pStart);
 		else
-			strncpy_s(tmpFromat, args[i].pStart, args[i + 1].pStart - args[i].pStart);
+			strncpy(tmpFromat, args[i].pStart, args[i + 1].pStart - args[i].pStart);
 
 		switch (argTypeList[i].fieldType)
 		{
@@ -77,19 +78,22 @@ char* DBAccess::Fromat(const char* sql, char* destr, int totalCount,vector<ArgTy
 			args[i].val.fieldType = DT_INT;
 			args[i].val.len = sizeof(int);
 			args[i].val.ptr.nInt32 = va_arg(ap, int);
-			sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, args[i].val.ptr.nInt32);
+			//sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, args[i].val.ptr.nInt32);
+			sprintf(destr + strlen(destr), tmpFromat, args[i].val.ptr.nInt32);
 			break;
 		case DT_INT64:		
 			args[i].val.fieldType = DT_INT64;
 			args[i].val.len = sizeof(long long);
 			args[i].val.ptr.nInt64 = va_arg(ap, long long);
-			sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, va_arg(ap, long long));
+			//sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, va_arg(ap, long long));
+			sprintf(destr + strlen(destr),tmpFromat, va_arg(ap, long long));
 			break;
 		case DT_DOUBLE:
 			args[i].val.fieldType = DT_DOUBLE;
 			args[i].val.len = sizeof(double);
 			args[i].val.ptr.lfDouble = va_arg(ap, double);
-			sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, va_arg(ap, double));
+			//sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, va_arg(ap, double));
+			sprintf(destr + strlen(destr), tmpFromat, va_arg(ap, double));
 			break;
 		case DT_STRING:
 			{
@@ -97,8 +101,9 @@ char* DBAccess::Fromat(const char* sql, char* destr, int totalCount,vector<ArgTy
 				args[i].val.fieldType = DT_STRING;
 				args[i].val.len = strlen(pTmp);
 				args[i].val.memType = 0;
-				strcpy_s(args[i].val.ptr.pStr = new char[strlen(pTmp) + 1], strlen(pTmp),pTmp);
-				sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, args[i].val.ptr.pStr);
+				strcpy(args[i].val.ptr.pStr = new char[strlen(pTmp) + 1],pTmp);
+				//sprintf_s(destr + strlen(destr), totalCount - strlen(destr), tmpFromat, args[i].val.ptr.pStr);
+				sprintf(destr + strlen(destr), tmpFromat, args[i].val.ptr.pStr);
 			}
 			break;
 		case DT_BLOB:

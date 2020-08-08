@@ -2,13 +2,9 @@
 #define __DyPlugin_H__
 
 class XMem;
-class DyPluginImp;
-#ifdef	WIN32
-#include "../stdafx.h"
+class DyPluginImpl;
+#include "../XDefine.h"
 class FRAMEWORK_API DyPlugin
-#else
-class DyPlugin
-#endif
 {
 public:
 	DyPlugin(XMem* pMem=0);
@@ -18,7 +14,7 @@ public:
 	const void* GetObjByLib(const char* strName)const;
 	void CloseLib()const;
 private:
-	DyPluginImp*		_Imp;
+	DyPluginImpl*		_Imp;
 	XMem*			pAllocator;
 };
 

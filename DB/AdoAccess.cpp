@@ -172,10 +172,10 @@ int AdoAccess::Query(const char* sql, list< list<DBField> >& result)
 	return 0;
 }
 
-int AdoAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, TagType type, list< list<DBField> >& result, ...)
+int AdoAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList,list< list<DBField> >& result, TagType type, ...)
 {
 	int nRet = 0;
-	if (0!=(nRet=DBAccess::Query(sql,argTypeList,type,result)))
+	if (0!=(nRet=DBAccess::Query(sql,argTypeList,result,type)))
 		return nRet;
 
 	va_list ap;

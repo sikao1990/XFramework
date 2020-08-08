@@ -1,7 +1,7 @@
 #ifndef __SystemApi_H__
 #define __SystemApi_H__
 
-#include "../stdafx.h"
+#include "../XDefine.h"
 
 class FRAMEWORK_API SystemApi
 {

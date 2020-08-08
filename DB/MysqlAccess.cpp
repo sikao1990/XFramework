@@ -1,6 +1,15 @@
 #include "MysqlAccess.h"
 #include "MysqlConn.h"
 #include <string.h>
+#include <stdarg.h>
+
+#ifdef WIN32
+typedef my_bool MYBOOL;
+#elif __linux__
+typedef my_bool MYBOOL;
+#elif __APPLE__
+typedef bool MYBOOL;
+#endif
 
 DEFINENODE(MysqlAccess, "MysqlAccess", DBAccess, ALLOCMEM);
 
@@ -161,7 +170,8 @@ int MysqlAccess::Query(const char* sql, list< list<DBField> >& result)
 				case MYSQL_TYPE_VAR_STRING:
 					tmpFields.fieldType = DT_STRING;
 					tmpFields.memType = 0;
-					strcpy_s(tmpFields.ptr.pStr = new char[fieldInfos[i].len+1], fieldInfos[i].len,row[i]);
+					//strcpy_s(tmpFields.ptr.pStr = new char[fieldInfos[i].len+1], fieldInfos[i].len,row[i]);
+					strcpy(tmpFields.ptr.pStr = new char[fieldInfos[i].len + 1], row[i]);
 					break;
 				case MYSQL_TYPE_BLOB:
 				case MYSQL_TYPE_LONG_BLOB:
@@ -185,10 +195,10 @@ int MysqlAccess::Query(const char* sql, list< list<DBField> >& result)
 	return 0;
 }
 
-int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, TagType type, list< list<DBField> >& result, ...)
+int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, list< list<DBField> >& result, TagType type, ...)
 {
 	int nRet = 0;
-	if (0 != (nRet = DBAccess::Query(sql, argTypeList, type, result)))
+	if (0 != (nRet = DBAccess::Query(sql, argTypeList, result,type)))
 		return nRet;
 	va_list ap;
 	MysqlConn* pMysqlConn = dynamic_cast<MysqlConn*>(m_connect);
@@ -198,14 +208,14 @@ int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, Ta
 
 	MYSQL_RES*	prepare_meta_result = NULL;
 	MYSQL_BIND*	pOutBind = NULL;
-	my_bool*	pBool = NULL;
+	MYBOOL*	pBool = NULL;
 	unsigned long*	pLength = NULL;
 	int  param_count = 0, column_count = 0;
 	MYSQL_FIELD *field = NULL;
 	vector<int>	vecTypes;
 	vector<DBField>	tmpFields;
 
-	va_start(ap, type);
+	va_start(ap, type);//
 	//∆¥Ω”sql”Ôæ‰,¥¶¿Ì %
 	pSql = Fromat(sql, strSql, sizeof(strSql), args, argTypeList, ap, '?', '%');
 	va_end(ap);
@@ -286,10 +296,10 @@ int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, Ta
 		vecTypes.push_back(field->type);
 	}
 	pOutBind = new MYSQL_BIND[column_count];
-	pBool = new my_bool[column_count];
+	pBool = new MYBOOL[column_count];
 	pLength = new unsigned long[column_count];
 	memset(pOutBind, 0, sizeof(MYSQL_BIND)*column_count);
-	memset(pBool, 0, sizeof(my_bool)*column_count);
+	memset(pBool, 0, sizeof(MYBOOL)*column_count);
 	memset(pLength, 0, sizeof(unsigned long)*column_count);
 
 	if (mysql_stmt_execute(stmt)) {

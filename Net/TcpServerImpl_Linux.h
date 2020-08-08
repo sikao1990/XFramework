@@ -9,8 +9,8 @@
 #include "SockHandle.h"
 #include "NetPackage.h"
 #include "BalanceHandle_Linux.h"
-#include "EpollServer.h"
-#include "EpollDefine.h"
+#include "AsyncServer.h"
+#include "AsyncNetDefine.h"
 
 class ThreadPri;
 class SessionInterface;
@@ -44,7 +44,7 @@ private:
 private:
 	char					m_bStart;
     int                     m_port;
-	EpollServer				m_epool;
+	AsyncServer*			m_pServer;
 	SessionInterface*		m_interface;
 	BalanceHandle			m_Manager;		
 	ThreadPri*				m_th[EPOLLDEALCOUNT];

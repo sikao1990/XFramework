@@ -5,12 +5,8 @@
 class XMem;
 class RWLockImpl;
 
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API RWLock
-#else
-class RWLock
-#endif
 {
 public:
 	RWLock(XMem* pMem=0);

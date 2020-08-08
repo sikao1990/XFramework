@@ -6,8 +6,8 @@
 #include "XNetCfg.h"
 #include "SockBase.h"
 #include "NetPackage.h"
-#include "EpollClient.h"
-#include "EpollDefine.h"
+#include "AsyncClient.h"
+#include "AsyncNetDefine.h"
 
 class ThreadPri;
 class SocketSession;
@@ -43,7 +43,7 @@ private:
 	SocketSession*		m_client;
 	ThreadPri*			m_th[2];
 	AbstractTimer*		m_timer;
-	EpollClient			m_epollNet;
+	AsyncClient*		m_pNet;
     TimerMgrImpl        m_timerMgr;
 };
 

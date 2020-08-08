@@ -1,18 +1,18 @@
-#ifndef __DyPluginImp_H__
-#define __DyPluginImp_H__
+#ifndef __DyPluginImpl_H__
+#define __DyPluginImpl_H__
 #include <windows.h>
 #include <winbase.h>
 
-class DyPluginImp
+class DyPluginImpl
 {
 public:
-	DyPluginImp();
+	DyPluginImpl();
 	bool OpenLib(const char* filePath)const;
 	void* GetObjByLib(const char* strName);
 	const void* GetObjByLib(const char* strName)const;
 	void CloseLib()const;
-	DyPluginImp(const DyPluginImp& th);
-	DyPluginImp& operator=(const DyPluginImp& th);	
+	DyPluginImpl(const DyPluginImpl& th);
+	DyPluginImpl& operator=(const DyPluginImpl& th);	
 private:
 	HINSTANCE 	m_hHandle;
 };

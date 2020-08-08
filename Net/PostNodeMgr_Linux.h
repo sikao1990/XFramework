@@ -2,7 +2,7 @@
 #define __PostNodeMgr_H__
 
 #include "../Mem/ObjPool.h"
-#include "EpollDefine.h"
+#include "AsyncNetDefine.h"
 
 class PostNodeMgr : public ObjPool<CPostReq>
 {

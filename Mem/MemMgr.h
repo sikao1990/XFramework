@@ -10,6 +10,7 @@ using namespace std;
 
 //用于替换stl内存分配器模板
 //由于使用线性存储动态节点，故不宜用于大量分配。
+////|EleNode|flagStr|NodeList| => sizeof(EleNode)+x*sizeof(T)+x*sizeof(char)+1 = len;
 class MemMgr
 {
 	struct EleNode

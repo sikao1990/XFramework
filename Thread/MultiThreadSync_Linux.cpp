@@ -53,7 +53,7 @@ void MultiThreadSync::Signal()
 void MultiThreadSync::AddThread(void* param)
 {
 	m_threads.insert(make_pair(param,m_nCount));
-	m_pFlag[m_nCount++]='0';
+	m_pFlag[m_nCount++]='0';//须使用编号分配管理(对象分配管理)
 }
 
 void MultiThreadSync::DelThread(void* param)

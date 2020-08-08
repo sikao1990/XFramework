@@ -1,26 +1,28 @@
 #ifndef __DBDefine_H__
 #define __DBDefine_H__
 
+#include "../XDefine.h"
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
 struct adoParam
 {
-	string 	m_dbIp;
-	string	m_user;
-	string	m_passwd;
-	string	m_dbName;
-	string	m_dbBase;
+	char 	m_dbIp[16];
+	char	m_user[16];
+	char	m_passwd[16];
+	char	m_dbName[16];
+	char	m_dbBase[32];
 };
 
 struct mysqlParam
 {
-	string 	m_dbIp;
-	string 	m_user;
-	string	m_passwd;
-	string	m_dbName;
-	//string m_textType;"gbk"
+	char 	m_dbIp[16];
+	char 	m_user[16];
+	char	m_passwd[16];
+	char	m_dbName[16];
+	//char m_textType;"gbk"
 };
 
 struct DBParam
@@ -30,6 +32,7 @@ struct DBParam
 		adoParam	_adoParam;
 		mysqlParam	_mysqlParam;
 	}param;
+	DBParam(const char* dbstr) :m_strDBinfo(dbstr) {}
 };
 
 enum DBFieldType {

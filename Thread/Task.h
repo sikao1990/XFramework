@@ -5,12 +5,8 @@
 typedef std::string jobtype;
 //typedef int jobtype;
 
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API Task
-#else
-class Task
-#endif
 {
 public:
 	//0 异步(不通知)�? 同步返回

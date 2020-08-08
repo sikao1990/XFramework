@@ -72,6 +72,29 @@ void AdoConn::DisConnectDB()
 	}
 }
 
+int AdoConn::BeginTrans()
+{
+	try {
+		m_pConn->BeginTrans();
+	}
+	catch (...) {
+		return -1;
+	}
+	return 0;
+}
+
+int AdoConn::CommitTrans(bool b)
+{
+	try {
+		b ? m_pConn->CommitTrans() : m_pConn->RollbackTrans();
+	}
+	catch (...) {
+		return -1;
+	}
+	return 0;
+}
+
+
 bool AdoConn::GetAdoBinaryData(_variant_t* pVarChunk, void* lpData, int nBytes)
 {
 	HRESULT hr;
@@ -126,26 +149,4 @@ int AdoConn::GetBinaryByAdo(FieldPtr pItem, DBField* pStart)
 		SafeArrayUnaccessData(varBLOB.parray);
 	}
 	return lDataSize;
-}
-
-int AdoConn::BeginTrans()
-{
-	try {
-		m_pConn->BeginTrans();
-	}
-	catch (...) {
-		return -1;
-	}
-	return 0;
-}
-
-int AdoConn::CommitTrans(bool b)
-{
-	try {
-		b ? m_pConn->CommitTrans() : m_pConn->RollbackTrans();
-	}
-	catch (...) {
-		return -1;
-	}
-	return 0;
 }

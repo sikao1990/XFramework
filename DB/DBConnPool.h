@@ -1,11 +1,13 @@
 #ifndef __DBConnPool_H__
 #define __DBConnPool_H__
+#include "../XDefine.h"
 #include "DBConnect.h"
 #include "../Mem/ObjPool.h"
 #include <thread>
 #include <map>
+#ifdef WIN32
 #include <windows.h>
-
+#endif
 using namespace std;
 
 typedef bool (*pFuncDB)();
@@ -31,7 +33,7 @@ struct DBInfo
 	pFuncDB	m_pFuncUnInit;
 };
 
-class DBConnPool : public ObjPool<DBConnect,true>
+class FRAMEWORK_API DBConnPool : public ObjPool<DBConnect,true>
 {
 public:
 	DBConnPool();
@@ -53,7 +55,9 @@ private:
 	string	m_tagDBInfo;
 	bool	m_RorganizeFlag;
 	bool	m_DBInitFlag;
+#ifdef WIN32
 	HANDLE	m_hEvent;
+#endif
 };
 
 #endif	//DBConnPool.h

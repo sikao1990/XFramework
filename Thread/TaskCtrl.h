@@ -3,12 +3,9 @@
 
 class XMem;
 class TaskCtrlImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+
+#include "../XDefine.h"
 class FRAMEWORK_API TaskCtrl
-#else
-class TaskCtrl
-#endif
 {
 public:
 	TaskCtrl(int n=1,XMem* pMem=0);

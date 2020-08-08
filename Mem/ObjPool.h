@@ -13,7 +13,7 @@
 //#include <Windows.h>
 
 #define ALLOCCOUNT		100
-#define USESTATISTICS	1	//是否需要使用统计功能
+#define USESTATISTICS	0	//是否需要使用统计功能
 
 using namespace std;
 
@@ -56,7 +56,7 @@ class ObjPool
 	};
 public:
 	ObjPool();
-	~ObjPool();
+	virtual ~ObjPool();
 	bool Init(int size = ALLOCCOUNT,void* pExtendParam=NULL);
 	//附注:不能完全保证调用用户类型的构造函数
 	void* Alloc(int n=1);
@@ -75,11 +75,11 @@ protected:
 		T* pObj =(T*)p;
 		delete pObj;
 	}
-private:
+protected:
 	bool expand();
 	bool UpdateRecord();
 	ObjPool(const ObjPool&){}
-	ObjPool& operator=(const ObjPool& ){}
+	ObjPool& operator=(const ObjPool&) { return *this; }
 private:
 	unsigned short	m_nMax;
 	unsigned short	m_nBlockSize;

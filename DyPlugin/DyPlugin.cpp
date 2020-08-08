@@ -3,23 +3,23 @@
 #include "../Mem/XMem.h"
 
 #ifdef	WIN32
-#include "DyPluginImp_WIN32.h"
+#include "DyPluginImpl_Win32.h"
 #else
-#include "DyPluginImp_Linux.h"
+#include "DyPluginImpl_Linux.h"
 #endif
 
 DyPlugin::DyPlugin(XMem* pMem):pAllocator(pMem)
 {
-	if(NULL!=pAllocator && NULL!=(_Imp=(DyPluginImp*)pMem->Alloc(sizeof(DyPluginImp))) )
-		new ( _Imp ) DyPluginImp;
+	if(NULL!=pAllocator && NULL!=(_Imp=(DyPluginImpl*)pMem->Alloc(sizeof(DyPluginImpl))) )
+		new ( _Imp ) DyPluginImpl;
 	else
-		_Imp = new DyPluginImp;
+		_Imp = new DyPluginImpl;
 }
 
 DyPlugin::~DyPlugin()
 {
 	if (NULL != pAllocator){
-		_Imp->~DyPluginImp();
+		_Imp->~DyPluginImpl();
 		pAllocator->Free(_Imp);
 	}
 	else

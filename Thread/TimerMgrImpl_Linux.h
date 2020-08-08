@@ -62,7 +62,7 @@ class TimerMgrImpl
 		TimerMgrImpl* 	m_pTimer;
 	};
 public:
-	TimerMgrImpl();
+	TimerMgrImpl();//TODO:需要替换为单例
 	~TimerMgrImpl();
 	bool Init();
 	bool AddTimer(const char* str,AbstractTimer* timer);
@@ -81,6 +81,9 @@ protected:
 	void TimerHandle();
 	static void* TimerThread(void* );
 private:
+    void PauseTimer();
+    void StartTimer();
+    static void TimerProc(int sig);
 	TimerMgrImpl(const TimerMgrImpl& );
 	TimerMgrImpl& operator=(const TimerMgrImpl& );
 private:
@@ -89,6 +92,7 @@ private:
 	unsigned 							m_bTimerFlag;
 	sem_t								m_SemOnce;
 	sem_t								m_SemRepeat;
+    sem_t                               m_timeSync;
 	pthread_mutex_t						m_OnceLock;
 	pthread_rwlock_t					m_Repeatlock;
 	OnceProcess*						m_pOncePrecess;
@@ -102,5 +106,5 @@ private:
 	ThreadPool								m_pools;
 	pthread_t								m_timerTh;
 };
-
+static TimerMgrImpl* g_sTimerMgrImpl;
 #endif	// TimerMgrImpl_Linux.h

@@ -1,5 +1,5 @@
-#ifndef __EpollDefine_H__
-#define __EpollDefine_H__
+#ifndef __AsyncNetDefine_H__
+#define __AsyncNetDefine_H__
 
 #include <stdio.h>
 #include <iostream>
@@ -13,6 +13,11 @@ using namespace std;
 
 #define EPOLLCREATFDMAX (1024)
 #define EPOLLMONFDMAX   (512)
+
+#define READTASK 	"0"
+#define WRITETASK	"1"
+
+#define MAX_EVENT_COUNT　(5000)
 
 enum OpType
 {
@@ -59,14 +64,14 @@ public:
 	bool Valid() { return -1!=cSock;}
 };
 
-class EpollRWTask : public Task
+class AsyncNetRWTask : public Task
 {
 public:
-    EpollRWTask(int cSock,jobtype type,int sSock=-1):Task(type),m_cSock(cSock),m_sSock(sSock){}
+    AsyncNetRWTask(int cSock,jobtype type,int sSock=-1):Task(type),m_cSock(cSock),m_sSock(sSock){}
     int GetClientSock(){ return m_cSock;}
     int GetServerSock(){ return m_sSock;}
     virtual bool tCompare(jobtype type ,const Task* pTask)const{
-        EpollRWTask* pEtask = (EpollRWTask*)pTask;
+        AsyncNetRWTask* pEtask = (AsyncNetRWTask*)pTask;
         return m_cSock==pEtask->m_cSock&&this->m_type==pEtask->m_type&&this->m_type==type;
     }
 private:

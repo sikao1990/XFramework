@@ -3,12 +3,9 @@
 
 class XMem;
 class ThreadCtrlExImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+
+#include "../XDefine.h"
 class FRAMEWORK_API ThreadCtrlEx
-#else
-class ThreadCtrlEx
-#endif
 {
 public:
 	ThreadCtrlEx(XMem* pMem=0);

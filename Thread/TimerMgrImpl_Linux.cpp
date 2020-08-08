@@ -1,6 +1,8 @@
 #include "TimerMgrImpl_Linux.h"
+#include <signal.h>
 
 TimerMgrImpl::TimerMgrImpl():m_pools(2),bFlagOnce(0),bFlagRepeat(0),m_bTimerFlag(false){
+    g_sTimerMgrImpl = this;
 }
 
 TimerMgrImpl::~TimerMgrImpl(){
@@ -18,7 +20,10 @@ bool TimerMgrImpl::Init(){
 	if(sem_init(&m_SemOnce,0,0))
 		return false;
 	if(sem_init(&m_SemRepeat,0,0))
-		return false;			
+		return false;
+    if(sem_init(&m_timeSync,0,0))
+        return false;
+    signal(SIGALRM,&TimerMgrImpl::TimerProc);
 
 	m_pools.init_pool();
 	m_pOncePrecess=new OnceProcess(this);
@@ -33,6 +38,14 @@ bool TimerMgrImpl::Init(){
 	
 	pthread_create(&m_timerTh,NULL,&TimerMgrImpl::TimerThread,this);
 	pthread_detach(m_timerTh);
+
+    struct itimerval tt; 
+    tt.it_value.tv_sec = 1;
+    tt.it_value.tv_usec = 0;
+    tt.it_interval.tv_sec = 0;
+    tt.it_interval.tv_usec = 1000 * TIMERPRECISION;
+    setitimer(ITIMER_REAL,&tt,NULL);
+    
 	return true;
 }
 
@@ -79,9 +92,9 @@ bool TimerMgrImpl::ModifyRepeatTimer(const char* str,int len,int nInterval){
 
 void TimerMgrImpl::Stop(){
 	m_bTimerFlag = false;
-	m_pools.stop_pool();
 	m_pOncePrecess->stop();
 	m_pRepeatProcess->stop();
+	m_pools.stop_pool();
 
 	list<AbstractTimer*>::iterator it;
 	pthread_mutex_lock(&m_OnceLock);
@@ -178,28 +191,16 @@ void TimerMgrImpl::TimerHandle(){//定时器处理函数
 void* TimerMgrImpl::TimerThread(void* p)
 {
 	TimerMgrImpl* pThis = (TimerMgrImpl*)p;
-	struct timeval tv,tt;
-	long long mprev = 0;
-	long long mcur = 0;
-	long long ubegin = 0;
-	long long uend = 0;
 	if(NULL==pThis)throw "error thread inparam";
-	gettimeofday(&tv,NULL);
-	mprev = tv.tv_sec;
 	while(pThis->m_bTimerFlag){
-		gettimeofday(&tv,NULL);
-		mcur = tv.tv_sec;
-		ubegin = tv.tv_sec*1000 + tv.tv_usec/1000;
-		if(mcur-mprev==1){
-			pThis->TimerHandle();
-			//printf("--------->%prev:lld,cur:%lld\n",mprev,mcur);
-			mprev = mcur;
-		}
-		gettimeofday(&tt,NULL);
-		uend = tt.tv_sec*1000 + tt.tv_usec/1000;
-		//printf("ubegin:%lld,uend:%lld,sub:%lld\n",ubegin,uend,1000000-(uend-ubegin) );
-		usleep(999900-(uend-ubegin) );	
+        sem_wait(&pThis->m_timeSync);
+		pThis->TimerHandle();
 	}
+}
+
+void TimerMgrImpl::TimerProc(int sig)
+{
+    sem_post(&g_sTimerMgrImpl->m_timeSync);
 }
 
 void TimerMgrImpl::WakeOne()
@@ -210,5 +211,20 @@ void TimerMgrImpl::WakeOne()
 void TimerMgrImpl::WakeRepeat()
 {
 	sem_post(&m_SemRepeat);
+}
+
+void TimerMgrImpl::PauseTimer()
+{
+    alarm(0);
+}
+
+void TimerMgrImpl::StartTimer()
+{
+    struct itimerval tt; 
+    tt.it_value.tv_sec = 0;
+    tt.it_value.tv_usec = 1000;
+    tt.it_interval.tv_sec = 0;
+    tt.it_interval.tv_usec = 1000;
+    setitimer(ITIMER_REAL,&tt,NULL);
 }
 

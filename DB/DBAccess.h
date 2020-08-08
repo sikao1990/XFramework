@@ -4,13 +4,15 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <stdarg.h>
+#include "../XDefine.h"
 #include "../Pattern/TreeRelation.h"
 #include "DBDefine.h"
 
 using namespace std;
 
 class DBConnect;
-class DBAccess
+class FRAMEWORK_API DBAccess
 {
 protected:
 	struct ArgType {
@@ -35,7 +37,7 @@ public:
 	//非参数化sql接口
 	virtual int Query(const char* sql, list< list<DBField> >& result);
 	//参数化sql接口,在使用时尽量%不要出现在sql中
-	virtual int Query(const char* sql, const vector<FieldInfo>& argTypeList, TagType type, list< list<DBField> >& result, ...);
+	virtual int Query(const char* sql, const vector<FieldInfo>& argTypeList,list< list<DBField> >& result, TagType type, ...);
 protected:
 	char* Fromat(const char* sql, char* destr, int totalCount, vector<ArgType>& args, const vector<FieldInfo>& argTypeList, va_list ap, char c1, char c2);
 protected:

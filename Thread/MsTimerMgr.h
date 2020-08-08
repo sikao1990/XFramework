@@ -4,12 +4,9 @@
 
 class XMem;
 class MsTimerMgrImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+
+#include "../XDefine.h"
 class FRAMEWORK_API MsTimerMgr
-#else
-class MsTimerMgr
-#endif
 {
 public:
 	//MsTimerMgr(/*XMem* pMem=NULL*/);

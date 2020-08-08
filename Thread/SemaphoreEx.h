@@ -3,12 +3,9 @@
 
 class XMem;
 class SemaphoreExImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+
+#include "../XDefine.h"
 class FRAMEWORK_API SemaphoreEx
-#else
-class SemaphoreEx
-#endif
 {
 public:
 	SemaphoreEx(int nInit=0,int nWait=1,int nPost=1,XMem* pMem=0);

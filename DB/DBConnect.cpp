@@ -27,7 +27,7 @@ bool DBConnect::InitObj(DBAccess** ppObj, void* pParam)
 	const map<string, DBInfo>& dbInfos = DBConnPool::GetDBInfo();
 	if(dbInfos.find(m_dbType)!= dbInfos.end()){
 		*ppObj = DBAccess::getInstance(dbInfos.find(m_dbType)->second.DBProxyName);
-		new (*ppObj) DBAccess;
+		//new (*ppObj) DBAccess;
 		return (*ppObj)->InitAccessParam(pParam);
 	}else
 		return false;	

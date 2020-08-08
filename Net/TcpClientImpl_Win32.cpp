@@ -285,4 +285,5 @@ void TcpClientImpl::Close(const hSockFd& fd)
 bool TcpClientImpl::ReConnect()
 {
 	//TODO:
+	return false;
 }

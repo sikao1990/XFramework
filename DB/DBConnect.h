@@ -1,15 +1,16 @@
 #ifndef	__DBConnect_H__
 #define __DBConnect_H__
+#include "../XDefine.h"
 #include "DBAccess.h"
 #include "../Mem/ObjPool.h"
 #include "../Pattern/TreeRelation.h"
 #include "DBDefine.h"
 
 class DBConnPool;
-class DBConnect : public ObjPool<DBAccess>
+class FRAMEWORK_API DBConnect : public ObjPool<DBAccess>
 {
 public:
-	DBConnect() { m_bValid = false; }
+	DBConnect():ObjPool<DBAccess>(){ m_bValid = false; }
 	virtual ~DBConnect(){}
 	void SetDBInfo(const char* str, DBConnPool* pPool) { m_dbType = str; m_pFromPool = pPool; m_bValid = true; }
 	const string GetDBType()const { return m_dbType; }

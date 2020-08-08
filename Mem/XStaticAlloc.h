@@ -6,7 +6,7 @@
 
 using namespace std;
 /*
-Description:
+Description:根据记录区域获得使用信息，目标实现共享内存访问和管理，需求已忘记，以后处理
 	RAM/SRAM内存管理器/Nand文件系统原理 初级实现
 	map:|time_t|标记区域|记录区域|动态分配区域
 	动态分配区域:[symbol|toUser][ | ]...
@@ -15,11 +15,13 @@ Description:
 
 class XStaticAlloc
 {
-	struct RangeInfo{
+	struct RangeInfo{//记录区域信息单元
 		unsigned short	ri_nStart;
 		unsigned short	ri_nLen;
 	};
 public:
+	XStaticAlloc();
+	~XStaticAlloc();
 	void* Alloc(int len);
 	void Free(void* pStart);
 private:

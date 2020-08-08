@@ -3,12 +3,8 @@
 #include "Task.h"
 #include "TaskCtrl.h"
 
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API TaskProcess
-#else
-class TaskProcess
-#endif
 {
 public:
 	TaskProcess(TaskCtrl* pCtrl=NULL):m_ctrl(pCtrl){}

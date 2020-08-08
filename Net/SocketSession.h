@@ -12,7 +12,7 @@
 using namespace std;
 
 class PostNodeMgr;
-class SocketSession
+class FRAMEWORK_API SocketSession
 {
 	struct TMPBUF
 	{

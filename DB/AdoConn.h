@@ -9,11 +9,12 @@
 #ifndef __AdoConn_H__
 #define __AdoConn_H__
 #include "DBConnect.h"
+#include "../XDefine.h"
 
 #import "./msado15.dll" no_namespace rename("EOF","AdoEOF") 
 
 class AdoAccess;
-class AdoConn : public DBConnect
+class FRAMEWORK_API AdoConn : public DBConnect
 {
 	friend AdoAccess;
 public:

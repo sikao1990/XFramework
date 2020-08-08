@@ -6,7 +6,7 @@
 
 class SessionInterface;
 class TcpServerImpl;
-class XTcpServer
+class FRAMEWORK_API XTcpServer
 {
 public:
 	XTcpServer();

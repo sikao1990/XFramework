@@ -5,12 +5,9 @@
 
 class XMem;
 class MutexIntegerImpl;
-#ifdef	WIN32
-#include "../stdafx.h"
+
+#include "../XDefine.h"
 class FRAMEWORK_API MutexInterger
-#else
-class MutexInterger
-#endif
 {
 public:
 	MutexInterger(XMem* pMem=NULL);

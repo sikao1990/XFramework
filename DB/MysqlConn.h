@@ -8,18 +8,24 @@
 
 #ifndef __MysqlConn_H__
 #define __MysqlConn_H__
-#include "DBConnect.h"
 
+#include "../XDefine.h"
+#include "DBConnect.h"
+/*
 #ifdef _MSC_VER
-#ifdef _WIN64
+#ifdef WIN64
 #include <WinSock2.h>
-#elif _WIN32
+#elif WIN32
 #include <winsock.h>
 #endif
 #endif
-#include <mysql.h>
-
+*/
+#ifdef WIN32
+#include <C:/Program Files/MySQL/MySQL Server 5.7/include/mysql.h>
 #pragma comment(lib, "C:/Program Files/MySQL/MySQL Server 5.7/lib/libmysql.lib")  
+#else
+#include <mysql/mysql.h>
+#endif
 
 class MysqlAccess;
 class MysqlConn : public DBConnect

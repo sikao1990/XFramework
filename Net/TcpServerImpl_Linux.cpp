@@ -1,9 +1,17 @@
 #include "TcpServerImpl_Linux.h"
 #include "../Thread/ThreadImpl_Linux.h"
 #include "SocketSession.h"
+#ifdef  __linux__
+#include "AsyncNetServerImpl_Linux.h"
+#elif   __APPLE__ || __MACH__
+#include "AsyncNetServerImpl_Apple.h"
+#endif
 
-TcpServerImpl::TcpServerImpl():m_epool(POOLTHREADCOUNT),m_port(0),m_bStart(0)
+
+TcpServerImpl::TcpServerImpl():m_port(0),m_bStart(0)
 {
+    m_pServer = new AsyncNetServerImpl(POOLTHREADCOUNT);
+
 	for(int i=0;i<EPOLLDEALCOUNT;i++)
 		m_th[i] = new ThreadImpl<TcpServerImpl>(this,&TcpServerImpl::EpollThread);
 }
@@ -14,6 +22,7 @@ TcpServerImpl::~TcpServerImpl()
 		delete m_th[i];
     if(m_bStart)
         Stop();
+    delete m_pServer;
 }
 
 bool TcpServerImpl::SetNetParam(SessionInterface* Interface)
@@ -27,7 +36,7 @@ bool TcpServerImpl::SetNetParam(SessionInterface* Interface)
 
 bool TcpServerImpl::Start(int port)
 {
-	m_epool.Init(m_port=port);
+	m_pServer->Init(m_port=port);
     m_Manager.Start(this);
     m_bStart = 1;
     return true;
@@ -36,7 +45,7 @@ bool TcpServerImpl::Start(int port)
 bool TcpServerImpl::Stop()
 {
     m_bStart = 0;
-	m_epool.Stop();
+	m_pServer->Stop();
     m_Manager.Stop();
 	for(int i=0;i<EPOLLDEALCOUNT;i++)
 		m_th[i]->stop();
@@ -82,7 +91,7 @@ void TcpServerImpl::EpollThread()
 	int nTrans = 0;
 	SPostReq req={};
 	while(m_bStart){
-		if(m_epool.GetQueueComplateStatus(sock,req,nTrans)){
+		if(m_pServer->GetQueueComplateStatus(sock,req,nTrans)){
 			switch(req.oType){
 			case OP_ACCEPT:
                 m_Manager.AppendNewClient(SockHandle(0,req.ip.c_str(),m_port,req.cSock));
@@ -98,7 +107,7 @@ void TcpServerImpl::EpollThread()
 				break;
 			}
 		}else
-			sleep(1);//TODO::
+			usleep(1000);
 	}
 }
 
@@ -109,9 +118,17 @@ void TcpServerImpl::Close(const hSockFd& fd)
 
 bool TcpServerImpl::PostRecvReq(const hSockFd& fd,char* pStart,int len,int nIndex,void* pExtend,void* pPostNode )
 {
+    CPostReq* pReq = (CPostReq*)pPostNode;
+    pReq->cSock = fd;
+    m_pServer->postQuest(fd, jobtype(READTASK),*pReq);
+    return true;
 }
 
 bool TcpServerImpl::PostSendReq(const hSockFd& fd,char* pStart,int len,int nIndex,void* pPostNode)
 {
+    CPostReq* pReq = (CPostReq*)pPostNode;
+    pReq->cSock = fd;
+    m_pServer->postQuest(fd, jobtype(WRITETASK),*pReq);
+    return true;
 }
 

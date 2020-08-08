@@ -4,12 +4,8 @@
 
 using namespace std;
 
-#ifdef	WIN32
-#include "../stdafx.h"
+#include "../XDefine.h"
 class FRAMEWORK_API TimeInfo
-#else
-class TimeInfo
-#endif
 {
 public:
 	TimeInfo();

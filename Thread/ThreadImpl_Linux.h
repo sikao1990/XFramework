@@ -32,7 +32,7 @@ public:
 	void stop(){
 		m_hThread = 0;
 	}
-	unsigned GetThreadID(){ return m_hThread; }
+	size_t GetThreadID(){ return (size_t)m_hThread; }
 	bool IsRuning(){ return m_bRuning; }
 	static void mSleep(unsigned ms){ usleep(ms*1000); }
 	ThreadImpl(const ThreadImpl& th){
