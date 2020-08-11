@@ -9,11 +9,11 @@ using namespace std;
 
 struct adoParam
 {
-	char 	m_dbIp[16];
+	char 	m_dbIp[32];
 	char	m_user[16];
 	char	m_passwd[16];
 	char	m_dbName[16];
-	char	m_dbBase[32];
+	char	m_dbBase[128];
 };
 
 struct mysqlParam
@@ -27,12 +27,38 @@ struct mysqlParam
 
 struct DBParam
 {
-	string	m_strDBinfo;
+	char	m_strDBinfo[16];
 	union{
 		adoParam	_adoParam;
 		mysqlParam	_mysqlParam;
 	}param;
-	DBParam(const char* dbstr) :m_strDBinfo(dbstr) {}
+	DBParam() { memset(this, 0, sizeof(*this));}
+	DBParam(const char* DBInfo) {
+		memset(this, 0, sizeof(*this)); strcpy(m_strDBinfo, DBInfo);
+	}
+	DBParam(const DBParam& that) {
+		memcpy(this, &that, sizeof(*this));
+	}
+	DBParam& operator=(const DBParam& that) {
+		memcpy(this, &that, sizeof(*this));
+		return *this;
+	}
+};
+
+typedef bool(*pFuncDB)();
+struct DBInfo
+{
+	DBInfo(const char* pc = NULL, const char* pp = NULL, pFuncDB pInit = NULL, pFuncDB pUninit = NULL)
+	{
+		if (NULL != pc)DBConnName = pc;
+		if (NULL != pp)DBProxyName = pp;
+		if (NULL != pInit)m_pFuncInit = pInit;
+		if (NULL != pUninit)m_pFuncUnInit = pUninit;
+	}
+	string 	DBConnName;
+	string 	DBProxyName;
+	pFuncDB	m_pFuncInit;
+	pFuncDB	m_pFuncUnInit;
 };
 
 enum DBFieldType {

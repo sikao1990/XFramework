@@ -8,7 +8,7 @@ DirPtrImpl::DirPtrImpl():m_bflag(false),m_hFile(INVALID_HANDLE_VALUE)
 bool DirPtrImpl::Init(const char* path)const
 {
 	char szbuf[MAX_PATH] = {};
-	sprintf_s(szbuf, MAX_PATH, "%s/*", path);
+	sprintf(szbuf,"%s/*", path);
 	DirPtrImpl* pThis = const_cast<DirPtrImpl*>(this);
 	if (m_bflag)return false;
 	if (INVALID_HANDLE_VALUE == (pThis->m_hFile = FindFirstFile(szbuf,&pThis->m_fileInfo)))

@@ -408,44 +408,81 @@ int main()
 #endif
 
 #if 1
+	AddToParent(DBConnect, AdoConn);
+	AddToParent(DBAccess, AdoAccess);
+	REGISTER_DB_ENGINE("ado", AdoConn, AdoAccess);
 	DBConnPool dbPools;
-	dbPools.Init();
-	dbPools.InitDBlib();
-	DBParam tagDB("mssql");
-	tagDB.m_strDBinfo = "mssql";
-	//tagDB.param._adoParam.m_dbBase = "";
-	//tagDB.param._adoParam.m_dbIp = "localhost";
-	//tagDB.param._adoParam.m_dbName = "test";
-	//tagDB.param._adoParam.m_user = "sa";
-	//tagDB.param._adoParam.m_passwd = "zhubin123";
-	
+	DBParam tagDB("ado");
+	strcpy(tagDB.param._adoParam.m_dbBase, "Provider=SQLOLEDB.1;Persist Security Info=True;Initial Catalog=%s;Data Source=%s");
+	strcpy(tagDB.param._adoParam.m_dbIp , "localhost");
+	strcpy(tagDB.param._adoParam.m_dbName , "test");
+	strcpy(tagDB.param._adoParam.m_user , "sa");
+	strcpy(tagDB.param._adoParam.m_passwd , "zhubin123");
+	dbPools.Init(tagDB, ALLOCCOUNT/10);
 	DBConnect* pDBConn = dbPools.GetNewConnect();
-	pDBConn->InitConnecion(&tagDB);
-	pDBConn->ConnectDB();
 	DBAccess* pDBAccess = pDBConn->GetDBAccessProxy();
-	pDBAccess->SetConnect(pDBConn);
-	pDBAccess->InitAccessParam(NULL);
+
+	//char szbuf[256] = {};
+	//sprintf(szbuf, "insert into tb(name,fkb) values(%s,%d)", "\'hello\'", 3);
+	//pDBAccess->Execute(szbuf);
+	
+	//vector<FieldInfo> fargs;
+	//FieldInfo tmp;
+	//tmp.fieldName = "name";
+	//tmp.fieldType = DT_STRING;
+	//fargs.push_back(tmp);
+	//tmp.fieldName = "fkb";
+	//tmp.fieldType = DT_INT;
+	//fargs.push_back(tmp);
+	//pDBAccess->Execute("insert into tb(name,fkb) values(?,%d)", fargs, TT_Sql,"world",4);
+	//test code
+	list< list<DBField> > reslst;
+	//pDBAccess->Query("select * from userInfo", reslst);
+	//printf("%d\n",reslst.size());
+	//showSqlResult(reslst);
+	//fargs.clear();
+/*
+	char data[4] = { 'A','A','A','A' };
+	tmp.fieldName = "pic";
+	tmp.fieldType = DT_BLOB;
+	fargs.push_back(tmp);
+	//tmp.fieldName = "";
+	//tmp.fieldType = DT_INT;
+	//fargs.push_back(tmp);
+	pDBAccess->Execute("update example_blob set pic=? where id=99", fargs, TT_Sql,data,4);
+*/
+	//fargs.clear();
+	//tmp.fieldName = "id";
+	//tmp.fieldType = DT_INT;
+	//fargs.push_back(tmp);
+	//reslst.clear();
+	//pDBAccess->Query("select * from example_blob where id=?", fargs, reslst, TT_Sql, 99);
+	pDBAccess->Query("select pic from example_blob where id=99",reslst);
+	printf("row:%d\n", reslst.size());
+	showSqlResult(reslst);
+
+	pDBConn->ReleaseDBAccessProxy(pDBAccess);
+	dbPools.ReleaseConn(pDBConn);
 
 #endif
 
 #if 0
+	REGISTER_DB_ENGINE("mysql", MysqlConn, MysqlAccess);
 	DBConnPool dbPools;
-	dbPools.Init();
-	dbPools.InitDBlib();
 	DBParam tagDB("mysql");
-	tagDB.m_strDBinfo = "mssql";
 	//tagDB.param._adoParam.m_dbBase = "";
 	//tagDB.param._adoParam.m_dbIp = "localhost";
 	//tagDB.param._adoParam.m_dbName = "test";
 	//tagDB.param._adoParam.m_user = "sa";
 	//tagDB.param._adoParam.m_passwd = "zhubin123";
-
+	dbPools.Init(tagDB);
 	DBConnect* pDBConn = dbPools.GetNewConnect();
-	pDBConn->InitConnecion(&tagDB);
-	pDBConn->ConnectDB();
 	DBAccess* pDBAccess = pDBConn->GetDBAccessProxy();
-	pDBAccess->SetConnect(pDBConn);
-	pDBAccess->InitAccessParam(NULL);
+
+	//test code
+
+	pDBConn->ReleaseDBAccessProxy(pDBAccess);
+	dbPools.ReleaseConn(pDBConn);
 
 #endif
 

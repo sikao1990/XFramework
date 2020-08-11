@@ -54,59 +54,58 @@ int MysqlAccess::Execute(const char* sql, const vector<FieldInfo>& argTypeList, 
 	va_list ap;
 	MysqlConn* pMysqlConn = dynamic_cast<MysqlConn*>(m_connect);
 	vector<ArgType>	args;
+	vector<ArgType> resVec;
 	char strSql[1024] = {};
 	const char* pSql = NULL;
 
 	va_start(ap, type);
 	//拼接sql语句,处理 %
-	pSql = Fromat(sql, strSql, sizeof(strSql), args, argTypeList, ap, '?', '%');
+	pSql = Fromat(strSql, sql, sizeof(strSql), args, argTypeList, ap, '?', '%');
 	va_end(ap);
-	if (pSql != strSql)
+	if (!strlen(pSql) || pSql != strSql)
 		return -2;
 	if (args.size() != argTypeList.size())
 		return -3;
 	//去除 % 参数
-	for (vector<ArgType>::iterator it = args.begin(); !args.empty();)
+	for (int i = 0; i < args.size(); i++)
 	{
-		if (-1 == it->nFlag)
-			it = args.erase(it);
-		else
-			it++;
+		if (1 == args[i].nFlag)
+			resVec.push_back(args[i]);
 	}
-	MYSQL_BIND* pBindParam = new MYSQL_BIND[args.size()];
-	memset(pBindParam, 0, sizeof(MYSQL_BIND)*args.size());
+	MYSQL_BIND* pBindParam = new MYSQL_BIND[resVec.size()];
+	memset(pBindParam, 0, sizeof(MYSQL_BIND)*resVec.size());
 	MYSQL_STMT *stmt = mysql_stmt_init(pMysqlConn->m_pConn);
 	if (mysql_stmt_prepare(stmt, pSql, strlen(pSql)))
 		return 1;
 
-	for (int i = 0; i < args.size(); i++)
+	for (int i = 0; i < resVec.size(); i++)
 	{
-		pBindParam[i].length = &args[i].val.len;//TODO:
-		switch (args[i].val.fieldType)
+		pBindParam[i].length = &resVec[i].val.len;//TODO:
+		switch (resVec[i].val.fieldType)
 		{
 		case DT_INT:
-			pBindParam[i].buffer = (int *)&args[i].val.ptr.nInt32;
-			pBindParam[i].buffer_length = sizeof(args[i].val.ptr.nInt32);
+			pBindParam[i].buffer = (int *)&resVec[i].val.ptr.nInt32;
+			pBindParam[i].buffer_length = sizeof(resVec[i].val.ptr.nInt32);
 			pBindParam[i].buffer_type = MYSQL_TYPE_LONG;
 			break;
 		case DT_INT64:
-			pBindParam[i].buffer = (long long *)&args[i].val.ptr.nInt64;
-			pBindParam[i].buffer_length = sizeof(args[i].val.ptr.nInt64);
+			pBindParam[i].buffer = (long long *)&resVec[i].val.ptr.nInt64;
+			pBindParam[i].buffer_length = sizeof(resVec[i].val.ptr.nInt64);
 			pBindParam[i].buffer_type = MYSQL_TYPE_LONGLONG;
 			break;
 		case DT_DOUBLE:
-			pBindParam[i].buffer = (double *)&args[i].val.ptr.lfDouble;
-			pBindParam[i].buffer_length = sizeof(args[i].val.ptr.lfDouble);
+			pBindParam[i].buffer = (double *)&resVec[i].val.ptr.lfDouble;
+			pBindParam[i].buffer_length = sizeof(resVec[i].val.ptr.lfDouble);
 			pBindParam[i].buffer_type = MYSQL_TYPE_DOUBLE;
 			break;
 		case DT_STRING:
-			pBindParam[i].buffer = (char *)&args[i].val.ptr.pStr;
-			pBindParam[i].buffer_length = args[i].val.len;
+			pBindParam[i].buffer = (char *)&resVec[i].val.ptr.pStr;
+			pBindParam[i].buffer_length = resVec[i].val.len;
 			pBindParam[i].buffer_type = MYSQL_TYPE_STRING;
 			break;
 		case DT_BLOB:
-			pBindParam[i].buffer = (char *)&args[i].val.ptr.pStr;
-			pBindParam[i].buffer_length = args[i].val.len;
+			pBindParam[i].buffer = (char *)&resVec[i].val.ptr.pStr;
+			pBindParam[i].buffer_length = resVec[i].val.len;
 			pBindParam[i].buffer_type = MYSQL_TYPE_BLOB;
 			break;
 		}
@@ -203,6 +202,7 @@ int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, li
 	va_list ap;
 	MysqlConn* pMysqlConn = dynamic_cast<MysqlConn*>(m_connect);
 	vector<ArgType>	args;
+	vector<ArgType> resVec;
 	char strSql[1024] = {};
 	const char* pSql = NULL;
 
@@ -217,22 +217,20 @@ int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, li
 
 	va_start(ap, type);//
 	//拼接sql语句,处理 %
-	pSql = Fromat(sql, strSql, sizeof(strSql), args, argTypeList, ap, '?', '%');
+	pSql = Fromat(strSql, sql, sizeof(strSql), args, argTypeList, ap, '?', '%');
 	va_end(ap);
-	if (pSql != strSql)
+	if (!strlen(pSql) || pSql != strSql)
 		return -2;
 	if (args.size() != argTypeList.size())
 		return -3;
 	//去除 % 参数
-	for (vector<ArgType>::iterator it = args.begin(); !args.empty();)
+	for (int i = 0; i < args.size(); i++)
 	{
-		if (-1 == it->nFlag)
-			it = args.erase(it);
-		else
-			it++;
+		if (1 == args[i].nFlag)
+			resVec.push_back(args[i]);
 	}
-	MYSQL_BIND* pBindParam = new MYSQL_BIND[args.size()];
-	memset(pBindParam, 0, sizeof(MYSQL_BIND)*args.size());
+	MYSQL_BIND* pBindParam = new MYSQL_BIND[resVec.size()];
+	memset(pBindParam, 0, sizeof(MYSQL_BIND)*resVec.size());
 	MYSQL_STMT *stmt = mysql_stmt_init(pMysqlConn->m_pConn);
 	if (NULL == stmt)
 		return -4;
@@ -241,34 +239,34 @@ int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, li
 		goto NoFreeEnd;
 	}
 
-	for (int i = 0; i < args.size(); i++)
+	for (int i = 0; i < resVec.size(); i++)
 	{
-		pBindParam[i].length = &args[i].val.len;
-		switch (args[i].val.fieldType)
+		pBindParam[i].length = &resVec[i].val.len;
+		switch (resVec[i].val.fieldType)
 		{
 		case DT_INT:
-			pBindParam[i].buffer = (int *)&args[i].val.ptr.nInt32;
-			pBindParam[i].buffer_length = sizeof(args[i].val.ptr.nInt32);
+			pBindParam[i].buffer = (int *)&resVec[i].val.ptr.nInt32;
+			pBindParam[i].buffer_length = sizeof(resVec[i].val.ptr.nInt32);
 			pBindParam[i].buffer_type = MYSQL_TYPE_LONG;
 			break;
 		case DT_INT64:
-			pBindParam[i].buffer = (long long *)&args[i].val.ptr.nInt64;
-			pBindParam[i].buffer_length = sizeof(args[i].val.ptr.nInt64);
+			pBindParam[i].buffer = (long long *)&resVec[i].val.ptr.nInt64;
+			pBindParam[i].buffer_length = sizeof(resVec[i].val.ptr.nInt64);
 			pBindParam[i].buffer_type = MYSQL_TYPE_LONGLONG;
 			break;
 		case DT_DOUBLE:
-			pBindParam[i].buffer = (double *)&args[i].val.ptr.lfDouble;
-			pBindParam[i].buffer_length = sizeof(args[i].val.ptr.lfDouble);
+			pBindParam[i].buffer = (double *)&resVec[i].val.ptr.lfDouble;
+			pBindParam[i].buffer_length = sizeof(resVec[i].val.ptr.lfDouble);
 			pBindParam[i].buffer_type = MYSQL_TYPE_DOUBLE;
 			break;
 		case DT_STRING:
-			pBindParam[i].buffer = (char *)&args[i].val.ptr.pStr;
-			pBindParam[i].buffer_length = args[i].val.len;
+			pBindParam[i].buffer = (char *)&resVec[i].val.ptr.pStr;
+			pBindParam[i].buffer_length = resVec[i].val.len;
 			pBindParam[i].buffer_type = MYSQL_TYPE_STRING;
 			break;
 		case DT_BLOB:
-			pBindParam[i].buffer = (char *)&args[i].val.ptr.pStr;
-			pBindParam[i].buffer_length = args[i].val.len;
+			pBindParam[i].buffer = (char *)&resVec[i].val.ptr.pStr;
+			pBindParam[i].buffer_length = resVec[i].val.len;
 			pBindParam[i].buffer_type = MYSQL_TYPE_BLOB;
 			break;
 		}
@@ -277,7 +275,7 @@ int MysqlAccess::Query(const char* sql, const vector<FieldInfo>& argTypeList, li
 	mysql_stmt_bind_param(stmt, pBindParam);
 
 	param_count = mysql_stmt_param_count(stmt);
-	if (param_count != args.size()) {
+	if (param_count != resVec.size()) {
 		nRet = 2;
 		goto NoFreeEnd;
 	}

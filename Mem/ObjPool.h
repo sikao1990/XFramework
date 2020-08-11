@@ -59,8 +59,8 @@ public:
 	virtual ~ObjPool();
 	bool Init(int size = ALLOCCOUNT,void* pExtendParam=NULL);
 	//附注:不能完全保证调用用户类型的构造函数
-	void* Alloc(int n=1);
-	void Free(void* p,int n=1);
+	void* Alloc(int n=1);//TODO:
+	void Free(void* p,int n=1);//TODO:
 	int GetUsed();
 	int Capacity();
 	void ClearPool();
@@ -97,7 +97,7 @@ ObjPool<T, bUseLock>::ObjPool() :m_nMax(0), m_nBlockSize(sizeof(T)), m_bUseLock(
 	char szbuf[32] = {};
 	m_sLabel.reserve(32);
 	UpdateFlag();
-	//sprintf_s(szbuf, 32,"%d_%d", GetFlag(), typeid(T).name());
+	//sprintf(szbuf,"%d_%d", GetFlag(), typeid(T).name());
 	m_sLabel = szbuf;
 #endif
 }

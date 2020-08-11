@@ -28,7 +28,6 @@ MysqlConn::~MysqlConn()
 bool MysqlConn::InitConnecion(void* p)
 {
 	DBParam* pParam = NULL;
-	Init(ALLOCCOUNT);
 	m_pConn = mysql_init(NULL);
 	if (NULL == m_pConn)
 		return false;

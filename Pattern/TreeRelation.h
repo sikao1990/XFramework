@@ -12,9 +12,9 @@
 #include <iostream>
 #include <assert.h>
 
-typedef void* (*GetInstance)();
-
-#define ALLOCMEM(type)		(new (new char[sizeof(type)])type)
+typedef void* (*GetInstance)(void*);
+//TODO:
+#define ALLOCMEM(type)		(new type)
 
 #define CONSTRUCTNOALLOC(pStart,type)	(new (pStart)type)
 #define DESTRUCTNOFREE(pStart,type)	(pStart->~type())
@@ -25,10 +25,10 @@ typedef void* (*GetInstance)();
 	public:								\
 	static TreeRelation s_##type;		\
 	static TreeRelation* getParent();	\
-	static void*Create##type##Instance()	
+	static void*Create##type##Instance(void* p)	
 
 #define DEFINENODE(type,kind,parent,AllocMem) 		\
-	void* type::Create##type##Instance(){	\
+	void* type::Create##type##Instance(void* p){	\
 		return AllocMem(type);					\
 	}										\
 	TreeRelation* type::getParent(){		\
@@ -56,7 +56,7 @@ typedef void* (*GetInstance)();
 	private:							\
 		static int	s_children;			\
 	public:								\
-		static BaseClass* getInstance(const std::string& type);						\
+		static BaseClass* getInstance(const std::string& type,void*p);				\
 		static int relationcmp(const std::string& type,const std::string& typed);	\
 		static bool AddChild(const std::string& parenttype,TreeRelation*leaf);		\
 		static int removeChild(const std::string& type);							\
@@ -65,12 +65,12 @@ typedef void* (*GetInstance)();
 	private:																		\
 		static void clearReleation(TreeRelation* root);								\
 		static TreeRelation* findNode(const std::string& type,TreeRelation* root)
-	
+
 #define DEFINEBASEMETHOD(BaseClass)	\
-	BaseClass* BaseClass::getInstance(const std::string& type){		\
+	BaseClass* BaseClass::getInstance(const std::string& type,void* p){		\
 		TreeRelation* node=findNode(type,NODEADDRES(BaseClass));	\
 		if(node){													\
-			return reinterpret_cast<BaseClass*>(node->st_funcptr()); \
+			return reinterpret_cast<BaseClass*>(node->st_funcptr(p)); \
 		}else{														\
 			return NULL;											\
 		}															\
@@ -123,6 +123,7 @@ typedef void* (*GetInstance)();
 			}																\
 		}else																\
 			throw "The Arg type was no't in relation Tree";					\
+		return -2;															\
 	}																		\
 	int BaseClass::removeChild(const std::string& type){					\
 		assert(!type.size());												\

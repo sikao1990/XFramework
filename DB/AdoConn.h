@@ -29,8 +29,8 @@ public:
 public:
 	static bool InitLib();
 	static bool UninitLib();
-	bool GetAdoBinaryData(_variant_t* pVart,void* pStart, int count);
-	int GetBinaryByAdo(FieldPtr pItem, DBField* pStart);
+	bool SetAdoBinaryData(_variant_t* pVart,void* pStart, int count);
+	int GetBinaryByAdo(const _RecordsetPtr& pSet, const char* colName, DBField* pStart,long lDataSize);
 private:
 	DECLARENODE(AdoConn);
 private:

@@ -27,7 +27,6 @@ AdoConn::~AdoConn()
 bool AdoConn::InitConnecion(void* p)
 {
 	DBParam* pParam = (DBParam*)p;
-	Init(ALLOCCOUNT);
 	m_DBIP = pParam->param._adoParam.m_dbIp;
 	m_user = pParam->param._adoParam.m_user;
 	m_passwd = pParam->param._adoParam.m_passwd;
@@ -43,9 +42,9 @@ bool AdoConn::ConnectDB()
 		nRet = m_pConn.CreateInstance(__uuidof(Connection));
 		if (FAILED(nRet))
 			return false;
-		char strConn[128] = {};
-		sprintf_s(strConn, 128, m_dbStr.c_str(), m_DBIP, m_user, m_passwd, m_DBName);
-		nRet = m_pConn->Open(strConn, "", "", -1);
+		char strConn[512] = {};
+		sprintf(strConn,m_dbStr.c_str(), m_DBName.c_str(),m_DBIP.c_str());
+		nRet = m_pConn->Open(strConn,m_user.c_str(), m_passwd.c_str(), -1);
 		if (FAILED(nRet))
 			return false;
 	}
@@ -64,7 +63,10 @@ void AdoConn::DisConnectDB()
 {
 	try {
 		if (NULL != m_pConn)
+		{
 			m_pConn->Close();
+			m_pConn.Release();
+		}
 	}
 	catch (...)
 	{
@@ -95,7 +97,7 @@ int AdoConn::CommitTrans(bool b)
 }
 
 
-bool AdoConn::GetAdoBinaryData(_variant_t* pVarChunk, void* lpData, int nBytes)
+bool AdoConn::SetAdoBinaryData(_variant_t* pVarChunk, void* lpData, int nBytes)
 {
 	HRESULT hr;
 	long lngOffset = 0;
@@ -127,26 +129,26 @@ bool AdoConn::GetAdoBinaryData(_variant_t* pVarChunk, void* lpData, int nBytes)
 	return true;
 }
 
-int AdoConn::GetBinaryByAdo(FieldPtr pItem, DBField* pStart)
+int AdoConn::GetBinaryByAdo(const _RecordsetPtr& pSet, const char* colName, DBField* pStart, long lDataSize)
 {
-	if (pItem == NULL)
-		return 0;
-
-	long lDataSize = pItem->ActualSize;
-	if (lDataSize <= 0)
-		return 0;
-	pStart->ptr.pBlob = (unsigned char*)new char[lDataSize];
-	pStart->len = lDataSize;
-	pStart->memType = 0;
-	pStart->fieldType = DT_BLOB;
-	_variant_t varBLOB;
-	varBLOB = pItem->GetChunk(lDataSize);
-	if (varBLOB.vt == (VT_ARRAY | VT_UI1))
-	{
-		char* pBuf = NULL;
-		SafeArrayAccessData(varBLOB.parray, (void **)&pBuf);
-		memcpy(pStart->ptr.pBlob, pBuf, lDataSize);
-		SafeArrayUnaccessData(varBLOB.parray);
+	try {
+		pStart->ptr.pBlob = (unsigned char*)new char[lDataSize];
+		pStart->len = lDataSize;
+		pStart->memType = 0;
+		pStart->fieldType = DT_BLOB;
+		_variant_t varBLOB;
+		varBLOB = pSet->GetCollect(colName);
+		if (varBLOB.vt == (VT_ARRAY | VT_UI1))
+		{
+			char* pBuf = NULL;
+			SafeArrayAccessData(varBLOB.parray, (void **)&pBuf);
+			memcpy(pStart->ptr.pBlob, pBuf, lDataSize);
+			SafeArrayUnaccessData(varBLOB.parray);
+			return lDataSize;
+		}
 	}
-	return lDataSize;
+	catch (_com_error &e) {
+		cout << "connectPtr execute failed:" << e.Description();
+	}
+	return 0;
 }

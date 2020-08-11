@@ -9,7 +9,7 @@
 #include "Mem/ObjPool.h"
 #include "Mem/MemStatistics.h"
 #include "Pattern/TreeRelation.h"
-#include "ShareMemory/ShareMemory.h"
+#include "SharedMemory/SharedMemory.h"
 #include "SystemApi/ForceConvert.h"
 #include "SystemApi/TimeInfo.h"
 #include "Thread/AtomMutex.h"

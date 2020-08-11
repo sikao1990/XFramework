@@ -26,8 +26,8 @@ bool DBConnect::InitObj(DBAccess** ppObj, void* pParam)
 {
 	const map<string, DBInfo>& dbInfos = DBConnPool::GetDBInfo();
 	if(dbInfos.find(m_dbType)!= dbInfos.end()){
-		*ppObj = DBAccess::getInstance(dbInfos.find(m_dbType)->second.DBProxyName);
-		//new (*ppObj) DBAccess;
+		*ppObj = DBAccess::getInstance(dbInfos.find(m_dbType)->second.DBProxyName,NULL);
+		if (NULL == *ppObj)return false;
 		return (*ppObj)->InitAccessParam(pParam);
 	}else
 		return false;	
@@ -37,7 +37,7 @@ void DBConnect::ReleaseInvalidConn()
 {
 	m_bValid = false;
 	DisConnectDB();
-	m_pFromPool->ReCreatePool(this);
+	//m_pFromPool->ReCreatePool(this);
 }
 
 bool DBConnect::InitConnecion(void* p)

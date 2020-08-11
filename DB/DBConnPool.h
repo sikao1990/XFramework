@@ -2,59 +2,45 @@
 #define __DBConnPool_H__
 #include "../XDefine.h"
 #include "DBConnect.h"
+#include "DBDefine.h"
 #include "../Mem/ObjPool.h"
 #include <thread>
 #include <map>
 #ifdef WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 using namespace std;
 
-typedef bool (*pFuncDB)();
+#define REGISTER_DB_ENGINE(strDBinfo,ConnType,ProxyInfo)	\
+	DBConnPool::AddSupportDBengine(strDBinfo,#ConnType,#ProxyInfo,&ConnType::InitLib,&ConnType::UninitLib)
 
-#define REGISTER_DB(strDBinfo,ConnType,ProxyType)	\
-	DBConnPool::AddSupportDB(strDBinfo,#ConnType,#ProxyType,&ConnType::InitLib,&ConnType::UninitLib)
-
-#define UNREGISTER_DB(strDBinfo)	\
-	DBConnPool::DeleteSupportDB(strDBinfo)
-
-struct DBInfo
-{
-	DBInfo(const char* pc=NULL,const char* pp=NULL, pFuncDB pInit=NULL, pFuncDB pUninit=NULL)
-	{
-		if (NULL !=pc)DBConnName = pc;
-		if (NULL !=pp)DBProxyName = pp;
-		if (NULL != pInit)m_pFuncInit = pInit;
-		if (NULL != pUninit)m_pFuncUnInit = pUninit;
-	}
-	string 	DBConnName;
-	string 	DBProxyName;
-	pFuncDB	m_pFuncInit;
-	pFuncDB	m_pFuncUnInit;
-};
+#define UNREGISTER_DB_ENGINE(strDBinfo)	\
+	DBConnPool::DeleteSupportDBengine(strDBinfo)
 
 class FRAMEWORK_API DBConnPool : public ObjPool<DBConnect,true>
 {
 public:
 	DBConnPool();
 	virtual ~DBConnPool();
-	bool Init(int size = ALLOCCOUNT);
-	virtual bool InitDBlib(const char* p=NULL);
+	bool Init(const DBParam& param,int size = ALLOCCOUNT);
 	DBConnect* GetNewConnect();
 	void ReleaseConn(DBConnect* pConn);
 	void ReCreatePool(DBConnect* pConn);
-	static void AddSupportDB(const char* dbInfo,const char* connName,const char* proxyName, pFuncDB pInit = NULL, pFuncDB pUninit = NULL);
-	static void DeleteSupportDB(const char* dbInfo);
+	static void AddSupportDBengine(const char* dbInfo,const char* connName,const char* proxyName, pFuncDB pInit = NULL, pFuncDB pUninit = NULL);
+	static void DeleteSupportDBengine(const char* dbInfo);
 	static const map<string, DBInfo>& GetDBInfo() { return m_setDb; }
 protected:
+	virtual bool InitDBlib();
 	bool InitObj(DBConnect** ppObj, void* pParam);
 	void run();
 private:
 	static map<string,DBInfo>	m_setDb;
 private:
-	string	m_tagDBInfo;
 	bool	m_RorganizeFlag;
 	bool	m_DBInitFlag;
+	DBParam m_param;
 #ifdef WIN32
 	HANDLE	m_hEvent;
 #endif
