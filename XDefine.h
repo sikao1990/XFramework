@@ -9,10 +9,17 @@
 #define FRAMEWORK_API __declspec(dllimport)
 #endif
 
+#include <windows.h>
+
+typedef HANDLE  hHandle;
+
 #else
 	
 #define FRAMEWORK_API
+typedef int hHandle;
 
 #endif
+
+typedef void (*pProceeExitHandle)(void*);
 
 #endif

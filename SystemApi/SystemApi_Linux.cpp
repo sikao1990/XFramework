@@ -109,3 +109,18 @@ unsigned SystemApi::GetProcessID(const char* CmdName)
 	return GetPIDbyName_implements(CmdName, 0,0);//大小写不敏感
 }
 
+int SystemApi::StartDaemon(const char* workDir /*= NULL*/ )
+{
+    int fd = -1;
+    char* strWorkDir = NULL;
+    if(NULL==workDir||0==strlen(workDir)||-1==access(workDir,X_OK))
+        strWorkDir = getenv("HOME");
+    else
+        strWorkDir = workDir;
+    if(fork()!=0) return -1;
+	for(fd=0; fd<3; fd++) close(fd);
+	setsid();
+	umask(0022);
+	chdir(strWorkDir);
+    return 0;
+}

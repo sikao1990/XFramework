@@ -5,6 +5,7 @@ class SystemApi
 {
 public:
 	static unsigned GetProcessID(const char* CmdName);
+    static int StartDaemon(const char* workDir = NULL ); 
 };
 
 #endif	//SystemApi.h
