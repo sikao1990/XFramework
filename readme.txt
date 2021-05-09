@@ -35,6 +35,9 @@ Window/Linux/MacOS
 Description
     Partly not completed, and partly not tested
     
+Compile
+	scons
+
 Bug
     Current importance Bug
     1:DB

@@ -8,8 +8,8 @@
 
 using namespace std;
 
-//用于替换stl内存分配器模板
-//由于使用线性存储动态节点，故不宜用于大量分配。
+//以sizeof T为最小单元，一次性分配N个，并以字符串(sizeof T + 1)长度的字符串记录每个申请使用情况
+//每一次的整块分配以链表形式组织,单向不循环链表
 ////|EleNode|flagStr|NodeList| => sizeof(EleNode)+x*sizeof(T)+x*sizeof(char)+1 = len;
 class MemMgr
 {
@@ -31,7 +31,9 @@ public:
 	MemMgr();
 	virtual ~MemMgr();
 	bool Init(int blockSize);
+	//param n，将分配n个单位大小的可用内存
 	void* Alloc(int n=1);
+	//param n，与Alloc对应，释放时需要与之对应
 	void Free(void* p,int n=1);
 	MemMgr(const MemMgr& th);
 	MemMgr& operator=(const MemMgr& th);

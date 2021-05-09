@@ -1,5 +1,6 @@
 #ifndef __SystemApi_H__
 #define __SystemApi_H__
+#include <stdio.h>
 
 class SystemApi
 {

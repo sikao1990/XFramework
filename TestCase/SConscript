@@ -1,0 +1,110 @@
+import sys;
+import os;
+import platform;
+
+env = Environment()
+
+TEMPDIR = '/'
+CURDIR = os.getcwd()
+WORKDIR = CURDIR+TEMPDIR
+
+ostype = platform.system()
+#VariantDir(CURDIR+'/'+'build',CURDIR,0)
+
+winlib = [
+]
+wincppflag = [
+]
+winlinkflag = [
+]
+wincpppath = [
+]
+winlibpath = [
+]
+
+linuxlib = [
+	'pthread',
+	'm',
+]
+linuxcppflag = [
+	'-std=c++11'
+]
+linuxlinkflag = [
+]
+linuxcpppath = [
+]
+linuxlibpath = [
+]
+
+maclib = [
+	'pthread',
+	'm',
+]
+maccppflag = [
+	'-std=c++11'
+]
+maclinkflag = [
+]
+maccpppath = [
+]
+maclibpath = [
+]
+
+libs = [
+    'Framework',
+]
+cppflags = [
+]
+linkflags = [
+]
+libpath = [
+    WORKDIR+'../../',
+]
+cpppath = [
+]
+
+if ostype == 'Windows':
+	libs.extend(winlib)
+	cppflags.extend(wincppflag)
+	linkflags.extend(winlinkflag)
+	libpath.extend(winlibpath)
+	cpppath.extend(wincpppath)
+elif ostype == 'Linux':
+	libs.extend(linuxlib)
+	cppflags.extend(linuxcppflag)
+	linkflags.extend(linuxlinkflag)
+	libpath.extend(linuxlibpath)
+	cpppath.extend(linuxcpppath)
+elif ostype == 'Darwin':
+	libs.extend(maclib)
+	cppflags.extend(maccppflag)
+	linkflags.extend(maclinkflag)
+	libpath.extend(maclibpath)
+	cpppath.extend(maccpppath)
+
+SConscript('./Memory/SConscript',variant_dir='memory',src='./Memory',duplicate=0)
+SConscript('./Thread/SConscript',variant_dir='thread',src='./Thread',duplicate=0)
+
+Program('DynamicPlugin','DynamicPlugin.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('Mysql','Mysql.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('Process','Process.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('SharedMeA','SharedMemA.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('SharedMeB','SharedMemB.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+
+if ostype == 'Windows':
+	Program('Ado','Ado.cpp',
+		LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+	Program('ProcessEvent','ProcessEvent_Win32.cpp',
+		LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+	Program('ProcessMutex','ProcessMutex_Win32.cpp',
+		LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+	Program('RegisterItem','RegisterItem_Win32.cpp',
+		LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+	Program('Service','Service_Win32.cpp',
+		LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+

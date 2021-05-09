@@ -13,13 +13,13 @@ ProcessMutex::~ProcessMutex()
 bool ProcessMutex::CreateMutex(const char* strName)
 {
     if(NULL!=m_hHandle)return false;
-    return NULL!=(m_hHandle = CreateMutex(NULL,false,strName));
+    return NULL!=(m_hHandle = ::CreateMutex(NULL,false,strName));
 }
 
 bool ProcessMutex::OpenMutex(const char* strName)
 {
     if(NULL!=m_hHandle)return false;
-    return NULL!=(m_hHandle = OpenMutex(MUTEX_ALL_ACCESS,false,strName));
+    return NULL!=(m_hHandle = ::OpenMutex(MUTEX_ALL_ACCESS,false,strName));
 }
 
 void ProcessMutex::Lock()

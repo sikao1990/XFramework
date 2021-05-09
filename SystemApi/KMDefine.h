@@ -13,17 +13,17 @@
 #define _KEY_8      0x8 //(
 #define _KEY_9      0x9 //)
 #define _KEY_0      0xa //!
-#define _KEY_`      0xb //~
-#define _KEY_-      0xc //_
-#define _KEY_=      0xd //+
-#define _KEY_[      0xe //{
-#define _KEY_]      0xf //}
-#define _KEY_\      0x10 //|
-#define _KEY_;      0x11 //:
-#define _KEY_'      0x12 //"
-#define _KEY_,      0x13 //<
-#define _KEY_.      0x14 //>
-#define _KEY_/      0x15 //?
+#define _KEY_96      0xb //~
+#define _KEY_SUB     0xc //_
+#define _KEY_EQU     0xd //+
+#define _KEY_91      0xe //{
+#define _KEY_93      0xf //}
+#define _KEY_92      0x10 //|
+#define _KEY_59      0x11 //:
+#define _KEY_39      0x12 //"
+#define _KEY_44      0x13 //<
+#define _KEY_46      0x14 //>
+#define _KEY_47      0x15 //?
 
 #define _KEY_a      0x20 //
 #define _KEY_b      0x21 //
@@ -120,7 +120,7 @@ struct KeyVal
 {
     unsigned char           _ctrl1;
     unsigned char           _ctrl2;
-    unsigned short char     _key;//normal or ctrl
+    unsigned short      _key;//normal or ctrl
 };
 //复合键值
 union MixKey

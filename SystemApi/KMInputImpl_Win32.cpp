@@ -49,6 +49,6 @@ void KMInputImpl::KeyMouseDownUpEvent(unsigned MixKey,int nbtn,unsigned mVal,int
 
 int KMInputImpl::GetSystemKeyVal(int type,unsigned virVal)
 {
-    
+	return 0;
 }
 

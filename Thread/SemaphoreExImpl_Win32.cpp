@@ -25,7 +25,8 @@ void SemaphoreExImpl::SemSignal(int n){
 
 void SemaphoreExImpl::SemWait(int n){
 	if(NULL!=m_hSema){
-		for(int i=0;(i<n>0&&n<m_nWait)?n:m_nWait;i++){
+		int nWait = n>0&&n<m_nWait?n:m_nWait;
+		for(int i=0;i<nWait;i++){
 			WaitForSingleObject(m_hSema,INFINITE);//每次减1
 			m_nCount--;
 		}

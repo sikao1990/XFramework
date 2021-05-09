@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <map>
+#include "../XDefine.h"
 
 #define MAX_SERVICE_COUNT   5
 
@@ -20,7 +21,7 @@ struct SvrInfo{
 };
 
 //the child Inherits Servuce and must be single class
-class Service 
+class FRAMEWORK_API Service
 {
 public:
     Service();

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "RefPtr.h"
-#include <list>
+#include <iostream>
+#include "../../XPublic.h"
 
 using namespace std;
 
@@ -112,8 +112,8 @@ puts("=---------------------=");
 #if 1
     RefPtr<A> pa(new A());//生成新对象的时候给A的引用计数+1
 	RefPtr<B> pb(new B());//生成新对象的时候给B的引用计数+1
-    pa.EnableLoopRefMode(true);
-    pb.EnableLoopRefMode(true);
+    pa.EnableLoopRefMode(/*true*/);
+    pb.EnableLoopRefMode(/*true*/);
 	pa->spa = pb;//保存一个指针的时候B引用计数又+1
 	pb->spb = pa;//保存一个指针的时候A引用计数又+1    
 #endif
@@ -131,5 +131,5 @@ int main()
 {
     test();
     puts("----------------end-----------------");
-	return 0;
+    return 0;
 }

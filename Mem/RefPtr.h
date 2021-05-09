@@ -160,7 +160,7 @@ public:
     RefPtr<T>& CloneFrom(RefPtr<T>& that){
         
     }
-    T& operator*()throw ""{
+    T& operator*(){
 		//TODO:_bHasFree
         return *_pData;
     }

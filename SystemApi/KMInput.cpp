@@ -1,4 +1,4 @@
-#incldue "KMInput.h"
+#include "KMInput.h"
 #ifdef WIN32
 #include "KMInputImpl_Win32.h"
 #else
@@ -7,7 +7,7 @@
 
 KMInput::KMInput()
 {
-    _Impl = new KMInput();
+    _Impl = new KMInputImpl();
 }
 
 KMInput::~KMInput()

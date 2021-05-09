@@ -14,7 +14,6 @@ public:
     void ManualReset();
 private:
     HANDLE m_hHandle;
-    bool m_bWait;
     bool m_bManual;
 };
 

@@ -1,8 +1,11 @@
 #ifndef __KMInputImpl_Linux_H__
 #define __KMInputImpl_Linux_H__
+#include <stdio.h>
+#include <string>
 
 class KMInputImpl
 {
+public:
     KMInputImpl();
     ~KMInputImpl();
     bool Init(const char* key=NULL,const char* mouse=NULL);
@@ -22,9 +25,6 @@ class KMInputImpl
     //kStatus -1 表示键盘按键一次完整的按下-弹起
     //mStatus -1 表示鼠标按键一次完整的按下-弹起
     void KeyMouseDownUpEvent(unsigned MixKey,int nbtn,unsigned mVal,int kStatus=-1,int mStatus=-1);
-    //获取对应操作系统虚拟键值
-    //type:0 键盘；1 鼠标
-    int GetSystemKeyVal(int type,unsigned virVal);
     //获取对应操作系统虚拟键值
     //type:0 键盘；1 鼠标   
     int GetSystemKeyVal(int type,unsigned virVal);

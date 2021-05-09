@@ -1,9 +1,10 @@
 #include "Process.h"
+#include <string.h>
 
 #ifdef WIN32
 #include "ProcessImpl_Win32.h"
 #else
-#include "ProcessImol_Linux.h"
+#include "ProcessImpl_Linux.h"
 #endif
 
 Process::Process(pProceeExitHandle pfuncPtr)

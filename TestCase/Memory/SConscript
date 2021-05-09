@@ -1,0 +1,87 @@
+import sys;
+import os;
+import platform;
+
+env = Environment()
+
+TEMPDIR = '/'
+CURDIR = os.getcwd()
+WORKDIR = CURDIR+TEMPDIR
+
+ostype = platform.system()
+
+winlib = [
+]
+wincppflag = [
+]
+winlinkflag = [
+]
+wincpppath = [
+]
+winlibpath = [
+]
+
+linuxlib = [
+]
+linuxcppflag = [
+	'-std=c++11'
+]
+linuxlinkflag = [
+]
+linuxcpppath = [
+]
+linuxlibpath = [
+]
+
+maclib = [
+]
+maccppflag = [
+	'-std=c++11'
+]
+maclinkflag = [
+]
+maccpppath = [
+]
+maclibpath = [
+]
+
+libs = [
+    'Framework',
+]
+cppflags = [
+]
+linkflags = [
+]
+libpath = [
+    WORKDIR+'../../../',
+]
+cpppath = [
+]
+
+if ostype == 'Windows':
+	libs.extend(winlib)
+	cppflags.extend(wincppflag)
+	linkflags.extend(winlinkflag)
+	libpath.extend(winlibpath)
+	cpppath.extend(wincpppath)
+elif ostype == 'Linux':
+	libs.extend(linuxlib)
+	cppflags.extend(linuxcppflag)
+	linkflags.extend(linuxlinkflag)
+	libpath.extend(linuxlibpath)
+	cpppath.extend(linuxcpppath)
+elif ostype == 'Darwin':
+	libs.extend(maclib)
+	cppflags.extend(maccppflag)
+	linkflags.extend(maclinkflag)
+	libpath.extend(maclibpath)
+	cpppath.extend(maccpppath)
+
+Program('ObjPool','ObjPool.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('RefPtr','RefPtr.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('MemMgr','MemMgr.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('MemPool','MemPool.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)

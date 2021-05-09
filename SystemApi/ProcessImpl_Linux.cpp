@@ -1,6 +1,8 @@
 #include "ProcessImpl_Linux.h"
 #include "Process.h"
 #include <signal.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 ProcessImpl::ProcessImpl(pProceeExitHandle pfuncPtr,Process* proxy):
     m_pid(-1),m_pFuncPtr(pfuncPtr)
@@ -32,6 +34,6 @@ hHandle ProcessImpl::GetProcessHandle()
 
 unsigned ProcessImpl::NewProcessBody(const char* pPath,char** argv)
 {
-    return execvp(pPath.c_str(),argv);
+    return execvp(pPath,argv);
 }
 

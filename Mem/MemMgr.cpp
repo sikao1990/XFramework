@@ -38,7 +38,7 @@ void* MemMgr::Alloc(int n){
 		EleNode* pNodeNew = (EleNode*)pNew;
 		if(NULL!=pNew){
 			Expend(pNew,SYSMEMPAGE);
-			nIndex=FindAvailable(pNodeNew->pFlag,SYSMEMPAGE);
+			nIndex=FindAvailable(pNodeNew->pFlag,n);
 			if(-1==nIndex)
 				return NULL;
 			pBegin = pNodeNew;

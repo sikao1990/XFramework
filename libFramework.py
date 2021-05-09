@@ -3,6 +3,7 @@ import os;
 import platform;
 
 env = Environment()
+env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME']=1
 
 bStatic = ARGUMENTS.get('enable-static','true')
 bShared = ARGUMENTS.get('enable-shared','true')
@@ -10,59 +11,99 @@ bShared = ARGUMENTS.get('enable-shared','true')
 TEMPDIR = '/'
 CURDIR = os.getcwd()
 WORKDIR = CURDIR+TEMPDIR
+print(WORKDIR)
+#fpos = int(WORKDIR.rindex('bin'))
+BASEDIR = CURDIR#= WORKDIR[0:int(fpos)]
 
+env.VariantDir('bin',BASEDIR,duplicate=0)
 ostype = platform.system()
 
+sources = [
+    BASEDIR+'/DB/DBAccess.cpp',
+	BASEDIR+'/DB/DBConnect.cpp',
+	BASEDIR+'/DB/DBConnPool.cpp',
+	BASEDIR+'/DB/MangoAccess.cpp',
+	BASEDIR+'/DB/MangoConn.cpp',
+	BASEDIR+'/DB/ODBCAccess.cpp',
+	BASEDIR+'/DB/ODBCConn.cpp',
+	BASEDIR+'/DB/OracleAccess.cpp',
+	BASEDIR+'/DB/OracleConn.cpp',
+	BASEDIR+'/DB/SqliteAccess.cpp',
+	BASEDIR+'/DB/SqliteConn.cpp',
+	BASEDIR+'/DB/PostgreAccess.cpp',
+	BASEDIR+'/DB/PostgreConn.cpp',
+    BASEDIR+'/DirPtr/Dir.cpp',
+	BASEDIR+'/DirPtr/DirPtr.cpp',
+    BASEDIR+'/DyPlugin/DyPlugin.cpp',
+    BASEDIR+'/Mem/MemMgr.cpp',
+    BASEDIR+'/Mem/MemPool.cpp',
+    BASEDIR+'/Mem/MemStatistics.cpp',
+    BASEDIR+'/Mem/XStaticAlloc.cpp',
+	BASEDIR+'/Net/XUdpServer.cpp',
+	BASEDIR+'/Net/XUdpClient.cpp',
+	BASEDIR+'/Net/XTcpServer.cpp',
+	BASEDIR+'/Net/XTcpClient.cpp',
+	BASEDIR+'/Net/SocketSession.cpp',
+	BASEDIR+'/Net/PackPerData.cpp',
+    BASEDIR+'/SharedMemory/SharedMemory.cpp',
+    BASEDIR+'/SystemApi/KMInput.cpp',
+	BASEDIR+'/SystemApi/Process.cpp',
+	BASEDIR+'/SystemApi/TimeInfo.cpp',
+	BASEDIR+'/Thread/AtomMutex.cpp',
+	BASEDIR+'/Thread/MsTimerMgr.cpp',
+	BASEDIR+'/Thread/MutexInteger.cpp',
+	BASEDIR+'/Thread/RWLock.cpp',
+	BASEDIR+'/Thread/Semaphore.cpp',
+	BASEDIR+'/Thread/SemaphoreEx.cpp',
+	BASEDIR+'/Thread/Thread.cpp',
+	BASEDIR+'/Thread/TaskCtrl.cpp',
+	BASEDIR+'/Thread/ThreadCtrlEx.cpp',
+	BASEDIR+'/Thread/ThreadPool.cpp',
+	BASEDIR+'/Thread/TimerMgr.cpp',
+]
+libs = [
+]
+cppflags = [
+]
+linkflags = [
+]
+libpath = [
+]
+cpppath = [
+]
+
 winsource = [
-    WORKDIR+'DB/AdoAccess.cpp',
-    WORKDIR+'DB/AdoConn.cpp',
-    WORKDIR+'DB/DBAccess.cpp',
-    WORKDIR+'DB/DBConnect.cpp',
-    WORKDIR+'DB/DBConnPool.cpp',
-    WORKDIR+'DB/MysqlAccess.cpp',
-    WORKDIR+'DB/MysqlConn.cpp',
-    WORKDIR+'DirPtr/DirPtrImpl_Win32.cpp',
-    WORKDIR+'DirPtr/DirPtr.cpp',
-    WORKDIR+'DyPlugin/DyPluginImpl_Win32.cpp',
-    WORKDIR+'DyPlugin/DyPlugin.cpp',
-    WORKDIR+'Mem/MemStatistics.cpp',
-    WORKDIR+'Mem/MemPool.cpp',
-    WORKDIR+'Mem/MemMgr.cpp',
-    WORKDIR+'Mem/XStaticAlloc.cpp',
-    WORKDIR+'Net/BalanceHandle_Win32.cpp',
-    WORKDIR+'Net/PackPerData.cpp',
-    WORKDIR+'Net/PerIOData.cpp',
-    WORKDIR+'Net/PostNodeMgr_Win32.cpp',
-    WORKDIR+'Net/SocketSession.cpp',
-    WORKDIR+'Net/TcpClientImpl_Win32.cpp',
-    WORKDIR+'Net/TcpServerImpl_Win32.cpp',
-    WORKDIR+'Net/XTcpClient.cpp',
-    WORKDIR+'Net/XTcpServer.cpp',
-    WORKDIR+'SharedMemory/SharedMemoryImpl_Win32.cpp',
-    WORKDIR+'SharedMemory/SharedMemory.cpp',
-    WORKDIR+'SystemApi/SystemApi_Win32.cpp',
-    WORKDIR+'SystemApi/TimeInfo.cpp',
-    WORKDIR+'Thread/AtomMutexImpl_Win32.cpp',
-    WORKDIR+'Thread/AtomMutex.cpp',
-    WORKDIR+'Thread/MsTimerMgrImpl_Win32.cpp',
-    WORKDIR+'Thread/MsTimerMgr.cpp',
-    WORKDIR+'Thread/MutexIntegerImpl_Win32.cpp',
-    WORKDIR+'Thread/MutexInteger.cpp',
-    WORKDIR+'Thread/RWLockImpl_Win32.cpp',
-    WORKDIR+'Thread/RWLock.cpp',
-    WORKDIR+'Thread/SemaphoreImpl_Win32.cpp',
-    WORKDIR+'Thread/Semaphore.cpp',
-    WORKDIR+'Thread/SemaphoreExImpl_Win32.cpp',
-    WORKDIR+'Thread/SemaphoreEx.cpp',
-    WORKDIR+'Thread/TaskCtrlImpl_Win32.cpp',
-    WORKDIR+'Thread/TaskCtrl.cpp',
-    WORKDIR+'Thread/Thread.cpp',
-    WORKDIR+'Thread/ThreadCtrlExImpl_Win32.cpp',
-    WORKDIR+'Thread/ThreadCtrlEx.cpp',
-    WORKDIR+'Thread/ThreadPoolImpl_Win32.cpp',
-    WORKDIR+'Thread/ThreadPool.cpp',
-    WORKDIR+'Thread/TimerMgrImpl_Win32.cpp',
-    WORKDIR+'Thread/TimerMgr.cpp'
+    BASEDIR+'/DB/AdoAccess.cpp',
+	BASEDIR+'/DB/AdoConn.cpp',
+	BASEDIR+'/DB/MysqlAccess.cpp',
+	BASEDIR+'/DB/MysqlConn.cpp',
+    BASEDIR+'/DirPtr/DirPtrImpl_Win32.cpp',
+    BASEDIR+'/DirPtr/DirImpl_Win32.cpp',
+    BASEDIR+'/DyPlugin/DyPluginImpl_Win32.cpp',
+	BASEDIR+'/Net/TcpServerImpl_Win32.cpp',
+	BASEDIR+'/Net/TcpClientImpl_Win32.cpp',
+	BASEDIR+'/Net/PostNodeMgr_Win32.cpp',
+	BASEDIR+'/Net/BalanceHandle_Win32.cpp',
+	BASEDIR+'/Net/PerIOData.cpp',
+    BASEDIR+'/SharedMemory/SharedMemoryImpl_Win32.cpp',
+	BASEDIR+'/SystemApi/SystemApi_Win32.cpp',
+	BASEDIR+'/SystemApi/Service_Win32.cpp',
+	BASEDIR+'/SystemApi/RegItem_Win32.cpp',
+	BASEDIR+'/SystemApi/ProcessImpl_Win32.cpp',
+	BASEDIR+'/SystemApi/ProcessEvent_Win32.cpp',
+	BASEDIR+'/SystemApi/ProcessMutex_Win32.cpp',
+	BASEDIR+'/SystemApi/KMInputImpl_Win32.cpp',
+	BASEDIR+'/Thread/AtomMutexImpl_Win32.cpp',
+	BASEDIR+'/Thread/AtomMutexEx_Win32.cpp',
+	BASEDIR+'/Thread/MsTimerMgrImpl_Win32.cpp',
+	BASEDIR+'/Thread/MutexIntegerImpl_Win32.cpp',
+	BASEDIR+'/Thread/RWLockImpl_Win32.cpp',
+	BASEDIR+'/Thread/SemaphoreImpl_Win32.cpp',
+	BASEDIR+'/Thread/SemaphoreExImpl_Win32.cpp',
+	BASEDIR+'/Thread/TaskCtrlImpl_Win32.cpp',
+	BASEDIR+'/Thread/ThreadCtrlExImpl_Win32.cpp',
+	BASEDIR+'/Thread/ThreadPoolImpl_Win32.cpp',
+	BASEDIR+'/Thread/TimerMgrImpl_Win32.cpp',
 ]
 winlib = [
 ]
@@ -78,57 +119,34 @@ winlibpath = [
 ]
 
 linuxsource = [
-    WORKDIR+'DB/DBAccess.cpp',
-    WORKDIR+'DB/DBConnect.cpp',
-    WORKDIR+'DB/DBConnPool.cpp',
-    WORKDIR+'DB/MysqlAccess.cpp',
-    WORKDIR+'DB/MysqlConn.cpp',
-    WORKDIR+'DirPtr/DirPtrImpl_Linux.cpp',
-    WORKDIR+'DirPtr/DirPtr.cpp',
-    WORKDIR+'DyPlugin/DyPluginImpl_Linux.cpp',
-    WORKDIR+'DyPlugin/DyPlugin.cpp',
-    WORKDIR+'Mem/MemStatistics.cpp',
-    WORKDIR+'Mem/MemPool.cpp',
-    WORKDIR+'Mem/MemMgr.cpp',
-    WORKDIR+'Mem/XStaticAlloc.cpp',
-    WORKDIR+'Net/AsyncClient.cpp',
-    WORKDIR+'Net/AsyncNetClientImpl_Linux.cpp',
-    WORKDIR+'Net/AsyncServer.cpp',
-    WORKDIR+'Net/AsyncNetServerImpl_Linux.cpp',
-    WORKDIR+'Net/BalanceHandle_Linux.cpp',
-    WORKDIR+'Net/PackPerData.cpp',
-    WORKDIR+'Net/PostNodeMgr_Linux.cpp',
-    WORKDIR+'Net/SocketSession.cpp',
-    WORKDIR+'Net/TcpClientImpl_Linux.cpp',
-    WORKDIR+'Net/TcpServerImpl_Linux.cpp',
-    WORKDIR+'Net/XTcpClient.cpp',
-    WORKDIR+'Net/XTcpServer.cpp',
-    WORKDIR+'SharedMemory/SharedMemoryImpl_Linux.cpp',
-    WORKDIR+'SharedMemory/SharedMemory.cpp',
-    WORKDIR+'SystemApi/SystemApi_Linux.cpp',
-    WORKDIR+'SystemApi/TimeInfo.cpp',
-    WORKDIR+'Thread/AtomMutexImpl_Linux.cpp',
-    WORKDIR+'Thread/AtomMutex.cpp',
-    WORKDIR+'Thread/MsTimerMgrImpl_Linux.cpp',
-    WORKDIR+'Thread/MsTimerMgr.cpp',
-    WORKDIR+'Thread/MultiThreadSync_Linux.cpp',
-    WORKDIR+'Thread/MutexIntegerImpl_Linux.cpp',
-    WORKDIR+'Thread/MutexInteger.cpp',
-    WORKDIR+'Thread/RWLockImpl_Linux.cpp',
-    WORKDIR+'Thread/RWLock.cpp',
-    WORKDIR+'Thread/SemaphoreImpl_Linux.cpp',
-    WORKDIR+'Thread/Semaphore.cpp',
-    WORKDIR+'Thread/SemaphoreExImpl_Linux.cpp',
-    WORKDIR+'Thread/SemaphoreEx.cpp',
-    WORKDIR+'Thread/TaskCtrlImpl_Linux.cpp',
-    WORKDIR+'Thread/TaskCtrl.cpp',
-    WORKDIR+'Thread/Thread.cpp',
-    WORKDIR+'Thread/ThreadCtrlExImpl_Linux.cpp',
-    WORKDIR+'Thread/ThreadCtrlEx.cpp',
-    WORKDIR+'Thread/ThreadPoolImpl_Linux.cpp',
-    WORKDIR+'Thread/ThreadPool.cpp',
-    WORKDIR+'Thread/TimerMgrImpl_Linux.cpp',
-    WORKDIR+'Thread/TimerMgr.cpp'
+	BASEDIR+'/DB/MysqlAccess.cpp',
+	BASEDIR+'/DB/MysqlConn.cpp',
+    BASEDIR+'/DirPtr/DirImpl_Linux.cpp',
+	BASEDIR+'/DirPtr/DirPtrImpl_Linux.cpp',
+    BASEDIR+'/DyPlugin/DyPluginImpl_Linux.cpp',
+	BASEDIR+'/Net/TcpServerImpl_Linux.cpp',
+	BASEDIR+'/Net/TcpClientImpl_Linux.cpp',
+	BASEDIR+'/Net/PostNodeMgr_Linux.cpp',
+	BASEDIR+'/Net/BalanceHandle_Linux.cpp',
+	BASEDIR+'/Net/AsyncServer.cpp',
+	BASEDIR+'/Net/AsyncClient.cpp',
+	BASEDIR+'/Net/AsyncNetServerImpl_Linux.cpp',
+	BASEDIR+'/Net/AsyncNetClientImpl_Linux.cpp',
+    BASEDIR+'/SharedMemory/SharedMemoryImpl_Linux.cpp',
+    BASEDIR+'/SystemApi/SystemApi_Linux.cpp',
+	BASEDIR+'/SystemApi/ProcessImpl_Linux.cpp',
+	BASEDIR+'/SystemApi/KMInputImpl_Linux.cpp',
+	BASEDIR+'/Thread/AtomMutexImpl_Linux.cpp',
+	BASEDIR+'/Thread/MsTimerMgrImpl_Linux.cpp',
+	BASEDIR+'/Thread/MultiThreadSync_Linux.cpp',
+	BASEDIR+'/Thread/MutexIntegerImpl_Linux.cpp',
+	BASEDIR+'/Thread/RWLockImpl_Linux.cpp',
+	BASEDIR+'/Thread/SemaphoreImpl_Linux.cpp',
+	BASEDIR+'/Thread/SemaphoreExImpl_Linux.cpp',
+	BASEDIR+'/Thread/TaskCtrlImpl_Linux.cpp',
+	BASEDIR+'/Thread/ThreadCtrlExImpl_Linux.cpp',
+	BASEDIR+'/Thread/ThreadPoolImpl_Linux.cpp',
+	BASEDIR+'/Thread/TimerMgrImpl_Linux.cpp',
 ]
 linuxlib = [
     'pthread',
@@ -146,88 +164,52 @@ linuxlibpath = [
 ]
 
 macsource = [
-    WORKDIR+'DB/DBAccess.cpp',
-    WORKDIR+'DB/DBConnect.cpp',
-    WORKDIR+'DB/DBConnPool.cpp',
-    WORKDIR+'DB/MysqlAccess.cpp',
-    WORKDIR+'DB/MysqlConn.cpp',
-    WORKDIR+'DirPtr/DirPtrImpl_Linux.cpp',
-    WORKDIR+'DirPtr/DirPtr.cpp',
-    WORKDIR+'DyPlugin/DyPluginImpl_Linux.cpp',
-    WORKDIR+'DyPlugin/DyPlugin.cpp',
-    WORKDIR+'Mem/MemStatistics.cpp',
-    WORKDIR+'Mem/MemPool.cpp',
-    WORKDIR+'Mem/MemMgr.cpp',
-    WORKDIR+'Mem/XStaticAlloc.cpp',
-    WORKDIR+'Net/AsyncClient.cpp',
-    WORKDIR+'Net/AsyncNetClientImpl_Apple.cpp',
-    WORKDIR+'Net/AsyncServer.cpp',
-    WORKDIR+'Net/AsyncNetServerImpl_Apple.cpp',
-    WORKDIR+'Net/BalanceHandle_Linux.cpp',
-    WORKDIR+'Net/PackPerData.cpp',
-    WORKDIR+'Net/PostNodeMgr_Linux.cpp',
-    WORKDIR+'Net/SocketSession.cpp',
-    WORKDIR+'Net/TcpClientImpl_Linux.cpp',
-    WORKDIR+'Net/TcpServerImpl_Linux.cpp',
-    WORKDIR+'Net/XTcpClient.cpp',
-    WORKDIR+'Net/XTcpServer.cpp',
-    WORKDIR+'SharedMemory/SharedMemoryImpl_Linux.cpp',
-    WORKDIR+'SharedMemory/SharedMemory.cpp',
-    WORKDIR+'SystemApi/SystemApi_Linux.cpp',
-    WORKDIR+'SystemApi/TimeInfo.cpp',
-    WORKDIR+'Thread/AtomMutexImpl_Linux.cpp',
-    WORKDIR+'Thread/AtomMutex.cpp',
-    WORKDIR+'Thread/MsTimerMgrImpl_Linux.cpp',
-    WORKDIR+'Thread/MsTimerMgr.cpp',
-    WORKDIR+'Thread/MultiThreadSync_Linux.cpp',
-    WORKDIR+'Thread/MutexIntegerImpl_Linux.cpp',
-    WORKDIR+'Thread/MutexInteger.cpp',
-    WORKDIR+'Thread/RWLockImpl_Linux.cpp',
-    WORKDIR+'Thread/RWLock.cpp',
-    WORKDIR+'Thread/SemaphoreImpl_Linux.cpp',
-    WORKDIR+'Thread/Semaphore.cpp',
-    WORKDIR+'Thread/SemaphoreExImpl_Linux.cpp',
-    WORKDIR+'Thread/SemaphoreEx.cpp',
-    WORKDIR+'Thread/TaskCtrlImpl_Linux.cpp',
-    WORKDIR+'Thread/TaskCtrl.cpp',
-    WORKDIR+'Thread/Thread.cpp',
-    WORKDIR+'Thread/ThreadCtrlExImpl_Linux.cpp',
-    WORKDIR+'Thread/ThreadCtrlEx.cpp',
-    WORKDIR+'Thread/ThreadPoolImpl_Linux.cpp',
-    WORKDIR+'Thread/ThreadPool.cpp',
-    WORKDIR+'Thread/TimerMgrImpl_Linux.cpp',
-    WORKDIR+'Thread/TimerMgr.cpp'
+	BASEDIR+'/DB/MysqlAccess.cpp',
+	BASEDIR+'/DB/MysqlConn.cpp',
+    BASEDIR+'/DirPtr/DirImpl_Linux.cpp',
+	BASEDIR+'/DirPtr/DirPtrImpl_Linux.cpp',
+    BASEDIR+'/DyPlugin/DyPluginImpl_Linux.cpp',
+	BASEDIR+'/Net/TcpServerImpl_Linux.cpp',
+	BASEDIR+'/Net/TcpClientImpl_Linux.cpp',
+	BASEDIR+'/Net/PostNodeMgr_Linux.cpp',
+	BASEDIR+'/Net/BalanceHandle_Linux.cpp',
+	BASEDIR+'/Net/AsyncServer.cpp',
+	BASEDIR+'/Net/AsyncClient.cpp',
+	BASEDIR+'/Net/AsyncNetServerImpl_Apple.cpp',
+	BASEDIR+'/Net/AsyncNetClientImpl_Apple.cpp',
+    BASEDIR+'/SharedMemory/SharedMemoryImpl_Linux.cpp',
+	BASEDIR+'/SystemApi/SystemApi_Linux.cpp',
+	BASEDIR+'/SystemApi/ProcessImpl_Linux.cpp',
+	BASEDIR+'/SystemApi/KMInputImpl_Linux.cpp',
+	BASEDIR+'/Thread/AtomMutexImpl_Linux.cpp',
+	BASEDIR+'/Thread/MsTimerMgrImpl_Linux.cpp',
+	BASEDIR+'/Thread/MultiThreadSync_Linux.cpp',
+	BASEDIR+'/Thread/MutexIntegerImpl_Linux.cpp',
+	BASEDIR+'/Thread/RWLockImpl_Linux.cpp',
+	BASEDIR+'/Thread/SemaphoreImpl_Linux.cpp',
+	BASEDIR+'/Thread/SemaphoreExImpl_Linux.cpp',
+	BASEDIR+'/Thread/TaskCtrlImpl_Linux.cpp',
+	BASEDIR+'/Thread/ThreadCtrlExImpl_Linux.cpp',
+	BASEDIR+'/Thread/ThreadPoolImpl_Linux.cpp',
+	BASEDIR+'/Thread/TimerMgrImpl_Linux.cpp',
 ]
 maclib = [
     'pthread',
     'mysqlclient'
 ]
 maccppflag = [
-    '-std=c++11'
+    '-std=c++11',
+    '-I/usr/local/Cellar/mysql-client/8.0.23/include'
 ]
 maclinkflag = [
 ]
 maccpppath = [
-    '/usr/local/Cellar/mysql-client/8.0.21/include'
 ]
 maclibpath = [
-    '/usr/local/Cellar/mysql-client/8.0.21/lib/'
+    '/usr/local/Cellar/mysql-client/8.0.23/lib/'
 ]
 
-sources = [
-]
-libs = [
-]
-cppflags = [
-]
-linkflags = [
-]
-libpath = [
-]
-cpppath = [
-]
-
-print (WORKDIR)
+print (BASEDIR)
 
 if ostype == 'Windows':
     print ('Windows')
@@ -246,6 +228,7 @@ elif ostype == 'Linux':
     libpath.extend(linuxlibpath)
     cpppath.extend(linuxcpppath)
 elif ostype == 'Darwin':
+    bStatic = 'false';
     print ('Darwin')
     sources.extend(macsource)
     libs.extend(maclib)

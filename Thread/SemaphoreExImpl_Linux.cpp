@@ -24,10 +24,11 @@ void SemaphoreExImpl::SemSignal(int n){
 }
 
 void SemaphoreExImpl::SemWait(int n){
+	int nWait = n>0&&n<m_nWait?n:m_nWait;
 	pthread_mutex_lock(&m_lock);
-	while(m_nCount<m_nWait)
+	while(m_nCount<nWait)
 		pthread_cond_wait(&m_cond,&m_lock);
-	m_nCount -= n>0&&n<m_nWait?n:m_nWait;
+	m_nCount -= nWait;
 	pthread_mutex_unlock(&m_lock);	
 }
 	

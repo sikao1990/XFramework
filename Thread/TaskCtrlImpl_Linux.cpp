@@ -6,32 +6,32 @@ TaskCtrlImpl::TaskCtrlImpl()
 
 void TaskCtrlImpl::Init(int n)
 {
-	m_ctrl1.Init(0,1,n);
-	m_ctrl2.Init(n);
+	m_semaEx.Init(0,n,1);
+	m_multSync.Init(n);
 }
 
 void TaskCtrlImpl::SyncTaskOneTime()
 {
-	m_ctrl2.Signal();
-	m_ctrl1.SemWait();
+	m_multSync.Signal();//+n
+	m_semaEx.SemWait();//-m
 }
 
 void TaskCtrlImpl::wait(void* param)
 {
-	m_ctrl2.Wait(param);
+	m_multSync.Wait(param);//-1
 }
 
 void TaskCtrlImpl::done()
 {
-	m_ctrl1.SemSignal();
+	m_semaEx.SemSignal();//+1
 }
 
 void TaskCtrlImpl::AddThread(void* param)
 {
-	m_ctrl2.AddThread(param);
+	m_multSync.AddThread(param);
 }
 
 void TaskCtrlImpl::DelThread(void* param)
 {
-	m_ctrl2.DelThread(param);
+	m_multSync.DelThread(param);
 }

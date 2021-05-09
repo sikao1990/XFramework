@@ -122,7 +122,7 @@ protected:
 };
 
 template < typename T >
-class PackageProxy : public DataHandle
+class FRAMEWORK_API PackageProxy : public DataHandle
 {
 public:
 	PackageProxy() {}

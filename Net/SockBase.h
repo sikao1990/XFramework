@@ -4,7 +4,7 @@
 
 #include "XNetCfg.h"
 
-class SockBase
+class FRAMEWORK_API SockBase
 {
 public:
 	virtual ~SockBase(){}

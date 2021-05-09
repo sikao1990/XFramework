@@ -1,5 +1,6 @@
 #ifndef __SharedMemory_H__
 #define __SharedMemory_H__
+#include <stdio.h>
 
 class XMem;
 class SharedMemoryImpl;
@@ -8,8 +9,8 @@ class SharedMemoryImpl;
 class FRAMEWORK_API SharedMemory
 {
 public:
-	SharedMemory(XMem* pMem);
-	SharedMemory();
+	SharedMemory(XMem* pMem=NULL);
+	~SharedMemory();
 	bool Open(const char* str,int size)const;
 	void* GetAddress();
 	const void* GetAddress()const;

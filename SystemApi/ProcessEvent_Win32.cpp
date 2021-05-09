@@ -1,5 +1,6 @@
+#include "ProcessEvent_Win32.h"
 
-ProcessEvent::ProcessEvent():m_hHandle(NULL),m_bWait(true),m_bManual(false)
+ProcessEvent::ProcessEvent():m_hHandle(NULL),m_bManual(false)
 {
     
 }
@@ -12,26 +13,24 @@ ProcessEvent::~ProcessEvent()
 bool ProcessEvent::CreateEvent(const char* strName,bool bManual)
 {
     if(NULL!=m_hHandle)return false;
-    m_bWait = true;
     m_bManual = bManual;
-    return NULL!=(m_hHandle=CreateEvent(NULL,bManual?FALSE:TRUE, FALSE,strName));
+    return NULL!=(m_hHandle=::CreateEvent(NULL,bManual?FALSE:TRUE, FALSE,strName));
 }
 
 bool ProcessEvent::OpenEvent(const char* strName)
 {
     if(NULL!=m_hHandle)return false;
-    m_bWait = false;
-    return NULL!=(m_hHandle=OpenEvent(EVENT_ALL_ACCESS,NULL,strName));
+    return NULL!=(m_hHandle=::OpenEvent(EVENT_ALL_ACCESS,NULL,strName));
 }
 
 void ProcessEvent::Wait()
 {
-    if(NULL!=m_hHandle&&m_bWait) WaitForSingleObject(m_hHandle,INFINITE);
+    if(NULL!=m_hHandle) WaitForSingleObject(m_hHandle,INFINITE);
 }
 
 void ProcessEvent::Post()
 {
-    if(NULL!=m_hHandle&&!m_bWait)SetEvent(m_hHandle);
+    if(NULL!=m_hHandle)SetEvent(m_hHandle);
 }
 
 void ProcessEvent::ManualReset()

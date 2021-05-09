@@ -1,4 +1,5 @@
 #include "XStaticAlloc.h"
+#include <stdio.h>
 
 XStaticAlloc::XStaticAlloc()
 {

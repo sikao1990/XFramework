@@ -43,10 +43,9 @@ hHandle ProcessImpl::GetProcessHandle()
 
 unsigned ProcessImpl::NewProcessBody(const char* pPath,char** argv)
 {
-	 = NULL;
 	STARTUPINFO si = { sizeof(si) };
-	if(TRUE == CreateProcess(NULL,
-		m_cmdPath.c_str(),
+	if (TRUE == CreateProcess(NULL,
+		LPSTR(m_cmdPath.c_str()),
 		NULL,
 		NULL,
 		FALSE,
@@ -55,19 +54,20 @@ unsigned ProcessImpl::NewProcessBody(const char* pPath,char** argv)
 		NULL,
 		&si,
 		&m_info
-	))
-    BOOL result = RegisterWaitForSingleObject(&m_hWait, m_info.hProcess, OnExited, this, INFINITE, WT_EXECUTEONLYONCE);
-    if (!result)
-    {
-        DWORD error = GetLastError();
-        CloseHandle(m_info.hThread);
-        CloseHandle(m_info.hProcess);
-        printf("RegisterWaitForSingleObject() failed with error code %d\n",error);
-        return -1;
-    }
-        return m_info.dwProcessId;
-    else
-        return -1;
+	)) {
+		BOOL bResult = RegisterWaitForSingleObject(&m_hWait, m_info.hProcess, OnExited, this, INFINITE, WT_EXECUTEONLYONCE);
+		if (!bResult)
+		{
+			DWORD error = GetLastError();
+			CloseHandle(m_info.hThread);
+			CloseHandle(m_info.hProcess);
+			printf("RegisterWaitForSingleObject() failed with error code %d\n", error);
+			return -1;
+		}
+		return m_info.dwProcessId;
+	}
+	else
+		return -1;
 }
 
 void ProcessImpl::OnExited(void* context, BOOLEAN isTimeOut)

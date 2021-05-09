@@ -17,7 +17,7 @@ using namespace std;
 #define READTASK 	"0"
 #define WRITETASK	"1"
 
-#define MAX_EVENT_COUNT　(5000)
+#define MAX_EVENT_COUNT	(5000)
 
 enum OpType
 {

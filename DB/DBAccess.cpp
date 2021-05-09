@@ -2,7 +2,9 @@
 #include "DBConnect.h"
 #include <stdarg.h>
 #include <algorithm>
+#ifdef  WIN32
 #include <windows.h>
+#endif
 
 DEFINEBASEMETHOD(DBAccess);
 DEFINENODE(DBAccess, "DBAccess", DBAccess, ALLOCMEM);
@@ -130,7 +132,7 @@ char* DBAccess::Fromat(char* destr, const char* sql, int totalCount,vector<ArgTy
 		}
 		memset(szbuf, 0, sizeof(szbuf));
 		strncpy(szbuf, infoVec[infoVec.size() - 1].pStart, sql + strlen(sql) - infoVec[infoVec.size() - 1].pStart);
-		OutputDebugString("");
+		//OutputDebugString("");
 		tmpVec.push_back(szbuf);
 		memset(szbuf, 0, sizeof(szbuf));
 		for (int i = 1; i < tmpVec.size(); i++) {

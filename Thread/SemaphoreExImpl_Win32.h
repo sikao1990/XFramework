@@ -10,7 +10,9 @@ public:
 	SemaphoreExImpl();
 	~SemaphoreExImpl();
 	void Init(int nCount=0,int nWait=1,int nPost=1);
+	//If you specify parameters, the init parameter settings will be overwritten
 	void SemSignal(int n = -1);
+	//If you specify parameters, the init parameter settings will be overwritten
 	void SemWait(int n = -1);
 private:	
 	SemaphoreExImpl(const SemaphoreExImpl& sem);

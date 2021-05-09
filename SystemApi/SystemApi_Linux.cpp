@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <iostream>
 
 #define PROC_DIRECTORY "/proc/"
 #define CASE_SENSITIVE    1
@@ -112,7 +113,7 @@ unsigned SystemApi::GetProcessID(const char* CmdName)
 int SystemApi::StartDaemon(const char* workDir /*= NULL*/ )
 {
     int fd = -1;
-    char* strWorkDir = NULL;
+    std::string strWorkDir;
     if(NULL==workDir||0==strlen(workDir)||-1==access(workDir,X_OK))
         strWorkDir = getenv("HOME");
     else
@@ -121,6 +122,6 @@ int SystemApi::StartDaemon(const char* workDir /*= NULL*/ )
 	for(fd=0; fd<3; fd++) close(fd);
 	setsid();
 	umask(0022);
-	chdir(strWorkDir);
+	chdir(strWorkDir.c_str());
     return 0;
 }

@@ -10,7 +10,9 @@ class FRAMEWORK_API SemaphoreEx
 public:
 	SemaphoreEx(int nInit=0,int nWait=1,int nPost=1,XMem* pMem=0);
 	~SemaphoreEx();
+	//If you specify parameters, the init parameter settings will be overwritten
 	void SemSignal(int n = -1);
+	//If you specify parameters, the init parameter settings will be overwritten
 	void SemWait(int n = -1);
 private:	
 	SemaphoreEx(const SemaphoreEx&);

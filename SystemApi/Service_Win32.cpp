@@ -1,5 +1,5 @@
 #include "Service_Win32.h"
-#include "../../SystemApi/ForceConvert.h"
+#include "ForceConvert.h"
 #include <utility>
 
 using namespace std;

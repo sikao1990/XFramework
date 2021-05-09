@@ -16,7 +16,7 @@ SharedMemory::SharedMemory(XMem* pMem):pAllocator(pMem)
 		_Imp = new SharedMemoryImpl;	
 }
 
-SharedMemory::SharedMemory()
+SharedMemory::~SharedMemory()
 {
 	if (NULL != pAllocator){
 		_Imp->~SharedMemoryImpl();

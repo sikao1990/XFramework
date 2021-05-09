@@ -1,6 +1,8 @@
 #ifndef __ProcessImpl_Win32_H__
 #define __ProcessImpl_Win32_H__
+#include "../XDefine.h"
 #include <windows.h>
+#include <iostream>
 
 class Process;
 class ProcessImpl

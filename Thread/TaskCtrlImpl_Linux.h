@@ -18,8 +18,8 @@ private:
 	TaskCtrlImpl(const TaskCtrlImpl&);
 	TaskCtrlImpl& operator=(const TaskCtrlImpl&);
 private:
-	SemaphoreExImpl	m_ctrl1;
-	MultiThreadSync	m_ctrl2;
+	SemaphoreExImpl	m_semaEx;
+	MultiThreadSync	m_multSync;
 };
 
 #endif	// TaskCtrlImpl.h

@@ -59,8 +59,8 @@ public:
 	virtual ~ObjPool();
 	bool Init(int size = ALLOCCOUNT,void* pExtendParam=NULL);
 	//附注:不能完全保证调用用户类型的构造函数
-	void* Alloc(int n=1);//TODO:
-	void Free(void* p,int n=1);//TODO:
+	void* Alloc(int n=1);
+	void Free(void* p,int n=1);
 	int GetUsed();
 	int Capacity();
 	void ClearPool();
@@ -68,7 +68,7 @@ public:
 protected:
 	//alloc and Init,当用户自定义时，由用户自己决定是否调用 自定义类的构造与析构函数
 	virtual bool InitObj(T** ppObj,void* pParam) {
-		*ppObj = new T;
+		*ppObj = new T();
 		return true; 
 	}
 	virtual void Destroy(void* p) {
@@ -77,7 +77,8 @@ protected:
 	}
 protected:
 	bool expand();
-	bool UpdateRecord();
+	bool UpdateRecord(bool bInit=true);
+	int FindAvailable(int type, int n);
 	ObjPool(const ObjPool&){}
 	ObjPool& operator=(const ObjPool&) { return *this; }
 private:
@@ -130,17 +131,16 @@ template <typename T, bool bUseLock>
 void* ObjPool<T, bUseLock>::Alloc(int n) {
 	void* pRet = NULL;
 	bool flag = false;
+	int nIndex = -1;
 	if (m_bUseLock)m_lock.Lock();
-	typename vector<TNode>::iterator it = find_if(m_vecPMem.begin(), m_vecPMem.end(), TCompareByFlag(0));
-	if (it != m_vecPMem.end()) {
-		pRet = it->pData;
-		it->nFlag = 1;
+	nIndex = FindAvailable(0, n);
+	if (-1 != nIndex) {
+		pRet = m_vecPMem[nIndex].pData;
 	}
 	else {
 		if (expand()) {
-			it = find_if(m_vecPMem.begin(), m_vecPMem.end(), TCompareByFlag(0));
-			pRet = it->pData;
-			it->nFlag = 1;
+			nIndex = FindAvailable(0, n);
+			pRet = m_vecPMem[nIndex].pData;
 		}
 		else
 			pRet = NULL;
@@ -152,6 +152,10 @@ void* ObjPool<T, bUseLock>::Alloc(int n) {
 	if (flag)UpdateCapacity(m_sLabel, m_nMax);
 	UpdateUseInfo(m_sLabel, GetUsed());
 #endif
+	if (NULL != pRet) {
+		for (int i = 0; i < n; i++)
+			m_vecPMem[nIndex + i].nFlag = 1;
+	}
 	return pRet;
 }
 
@@ -159,10 +163,12 @@ template <typename T, bool bUseLock>
 void ObjPool<T, bUseLock>::Free(void* p, int n) {
 	if (m_bUseLock)m_lock.Lock();
 	typename vector<TNode>::iterator it = find_if(m_vecPMem.begin(), m_vecPMem.end(), TCompareByPoiter(p));
-	if (it != m_vecPMem.end())
-		it->nFlag = 0;
+	if (it != m_vecPMem.end()) {
+		int nIndex = it - m_vecPMem.begin();
+		for (int i = 0; i < n; i++)
+			m_vecPMem[nIndex + i].nFlag = 0;
+	}
 	if (m_bUseLock)m_lock.UnLock();
-
 #if USESTATISTICS
 	UpdateUseInfo(m_sLabel, GetUsed());
 #endif
@@ -172,8 +178,8 @@ template <typename T, bool bUseLock>
 int ObjPool<T, bUseLock>::GetUsed()
 {
 	int total = 0;
-	for (int i = 0; i < m_vecPMem.size(); i++)
-		if (m_vecPMem[i].nFlag)
+	for (int i = 0; i < m_vecPMem.size(); i++) 
+		if (m_vecPMem[i].nFlag) 
 			total++;
 	return total* sizeof(T);
 }
@@ -181,16 +187,17 @@ int ObjPool<T, bUseLock>::GetUsed()
 template <typename T, bool bUseLock>
 bool ObjPool<T, bUseLock>::expand() {
 	m_nMax *= 2;
-	m_vecPMem.reserve(m_nMax);
-	return UpdateRecord();
+	m_vecPMem.reserve(m_nMax);//数据拷贝低效，可改进
+	m_vecPMem.resize(m_nMax);
+	return UpdateRecord(false);
 }
 
 template <typename T, bool bUseLock>
-bool ObjPool<T, bUseLock>::UpdateRecord()
+bool ObjPool<T, bUseLock>::UpdateRecord(bool bInit)
 {
-	for (int i = 0; i < m_vecPMem.size(); i++) {
+	for (int i = bInit?0:m_nMax/2; i < m_nMax; i++) {
 		m_vecPMem[i].nIndex = i;
-		if (!InitObj(&m_vecPMem[i].pData, m_pExtendParm))
+		if (!InitObj(&m_vecPMem[i].pData, m_pExtendParm))//TODO:错误的回滚-内存回收
 			return false;
 	}
 	return true;
@@ -209,7 +216,7 @@ bool ObjPool<T, bUseLock>::RetryInitObj()
 	if (m_bUseLock)m_lock.Lock();
 	for (int i = 0; i < m_vecPMem.size(); i++)
 	{
-		if (!InitObj(&m_vecPMem[i].pData, m_pExtendParm)) {
+		if (!InitObj(&m_vecPMem[i].pData, m_pExtendParm)) {//TODO:错误的回滚-内存回收
 			flag = false;
 			break;
 		}
@@ -230,4 +237,35 @@ void ObjPool<T, bUseLock>::ClearPool()
 	if (m_bUseLock)m_lock.UnLock();
 }
 
+//效率较低，以空间换时间，访问和更新空闲节点信息数据结构
+template<typename T,bool bUseLock>
+int ObjPool<T, bUseLock>::FindAvailable(int type, int n)
+{
+	int nCount = 0;
+	typename vector<TNode>::iterator itBegin = m_vecPMem.begin();
+	typename vector<TNode>::iterator it = m_vecPMem.end();
+	typename vector<TNode>::iterator itStart = it;
+	do {
+		it = find_if(itBegin, m_vecPMem.end(), TCompareByFlag(type));
+		if (m_vecPMem.end() != it) {
+			if (0 == nCount) {
+				nCount += 1;
+				itStart = it;
+				itBegin = it + 1;
+			}
+			else {
+				if (it == itBegin)
+					++nCount;
+				else {
+					nCount = 1;
+					itStart = it;
+				}
+				itBegin = it + 1;
+			}
+			if (nCount == n)
+				break;
+		}
+	} while (it!=m_vecPMem.end());
+	return nCount == n ? itStart - m_vecPMem.begin() : -1;
+}
 #endif	//ObjPool.h

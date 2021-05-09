@@ -1,6 +1,7 @@
 #ifndef __KMInput_H__
 #define __KMInput_H__
 
+#include <stdio.h>
 #include "KMDefine.h"
 
 class KMInputImpl;

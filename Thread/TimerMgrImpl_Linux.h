@@ -29,7 +29,7 @@ class TimerMgrImpl
 		void operator()(Task* task){
 			while(m_bFlag){
 				m_pTimer->WaitOnce();
-				m_pTimer->DealOnceHandle();
+				m_pTimer->DealOnceHandle();//TODO:Bug stop will call again
 			}
 		}
 		void stop()
@@ -49,7 +49,7 @@ class TimerMgrImpl
 		void operator()(Task* task){
 			while(m_bFlag){
 				m_pTimer->WaitRepeat();
-				m_pTimer->DealRepeatHandle();
+				m_pTimer->DealRepeatHandle();//TODO:Bug stop will call again
 			}			
 		}
 		void stop()

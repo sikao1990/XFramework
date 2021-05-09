@@ -1,5 +1,11 @@
 #include "DBConnPool.h"
 
+#ifdef WIN32
+#include "../Thread/ThreadImpl_Win32.h"
+#else
+#include "../Thread/ThreadImpl_Linux.h"
+#endif
+
 map<string,DBInfo>	DBConnPool::m_setDb;
 
 DBConnPool::DBConnPool():ObjPool<DBConnect, true>()
@@ -26,8 +32,9 @@ bool DBConnPool::Init(const DBParam& param, int size )
 	m_hEvent = CreateEvent(NULL, false, false, NULL);
 #endif
 	m_param = param;
-	std::thread t(&DBConnPool::run,this);
-	t.detach();
+	ThreadImpl<DBConnPool> t(this,&DBConnPool::run);
+	//std::thread t(&DBConnPool::run,this);
+	//t.detach();
 	return ObjPool<DBConnect, true>::Init(size,&m_param)&& InitDBlib();
 }
 

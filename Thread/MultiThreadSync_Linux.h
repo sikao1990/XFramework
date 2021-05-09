@@ -21,10 +21,7 @@ private:
 	MultiThreadSync(const MultiThreadSync&);
 	MultiThreadSync& operator=(const MultiThreadSync&);
 private:
-	unsigned short	m_nCount;
-	unsigned short	m_nStrLen;
-	string 			m_strTag;
-	char*			m_pFlag;
+	int 			m_nths;
 	pthread_mutex_t	m_lock;
 	pthread_cond_t	m_cond;
 	map<void*,int>	m_threads;

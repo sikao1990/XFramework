@@ -1,8 +1,10 @@
 #ifndef __KMInputImpl_Win32_H__
 #define __KMInputImpl_Win32_H__
+#include <stdio.h>
 
 class KMInputImpl
 {
+public:
     KMInputImpl();
     ~KMInputImpl();
     bool Init(const char* key=NULL,const char* mouse=NULL);
@@ -27,7 +29,7 @@ class KMInputImpl
     int GetSystemKeyVal(int type,unsigned virVal);
     //获取对应操作系统虚拟键值
     //type:0 键盘；1 鼠标
-    int GetSystemKeyVal(int type,unsigned virVal);
+    //int GetSystemKeyVal(int type,unsigned virVal);
 };
 
 #endif  //KMInputImpl_Win32.h

@@ -14,7 +14,6 @@ using namespace std;
 #define DEFAULTCOUNT	(3)
 #define SORTTIME		(60)		//内存碎片整理时间间隔-分钟
 
-//TODO:算法的效率评估及最优算法的寻找的根本
 class ThreadPri;
 class MemPool : public XMem	//线程安全,跨平台
 {

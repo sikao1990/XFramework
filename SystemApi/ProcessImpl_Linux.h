@@ -1,5 +1,7 @@
 #ifndef __ProcessImpl_Linux_H__
 #define __ProcessImpl_Linux_H__
+#include <string>
+#include "../XDefine.h"
 
 class Process;
 class ProcessImpl

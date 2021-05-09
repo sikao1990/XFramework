@@ -1,0 +1,108 @@
+import sys;
+import os;
+import platform;
+
+env = Environment()
+
+TEMPDIR = '/'
+CURDIR = os.getcwd()
+WORKDIR = CURDIR+TEMPDIR
+
+ostype = platform.system()
+
+winlib = [
+]
+wincppflag = [
+]
+winlinkflag = [
+]
+wincpppath = [
+]
+winlibpath = [
+]
+
+linuxlib = [
+	'pthread',
+	'm',
+]
+linuxcppflag = [
+	'-std=c++11'
+]
+linuxlinkflag = [
+]
+linuxcpppath = [
+]
+linuxlibpath = [
+]
+
+maclib = [
+	'pthread',
+	'm',
+]
+maccppflag = [
+	'-std=c++11'
+]
+maclinkflag = [
+]
+maccpppath = [
+]
+maclibpath = [
+]
+
+libs = [
+    'Framework',
+]
+cppflags = [
+]
+linkflags = [
+]
+libpath = [
+    WORKDIR+'../../../',
+]
+cpppath = [
+]
+
+if ostype == 'Windows':
+	print ('Windows')
+	libs.extend(winlib)
+	cppflags.extend(wincppflag)
+	linkflags.extend(winlinkflag)
+	libpath.extend(winlibpath)
+	cpppath.extend(wincpppath)
+elif ostype == 'Linux':
+	print ('Linux')
+	libs.extend(linuxlib)
+	cppflags.extend(linuxcppflag)
+	linkflags.extend(linuxlinkflag)
+	libpath.extend(linuxlibpath)
+	cpppath.extend(linuxcpppath)
+elif ostype == 'Darwin':
+	print ('Darwin')
+	libs.extend(maclib)
+	cppflags.extend(maccppflag)
+	linkflags.extend(maclinkflag)
+	libpath.extend(maclibpath)
+	cpppath.extend(maccpppath)
+
+Program('AtomMutex','AtomMutex.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('MutexInteger','MutexInteger.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('RWLock','RWLock.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('Semaphore','Semaphore.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('SemaphoreEx','SemaphoreEx.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('TaskPool','TaskPool.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('ThreadCtrl','ThreadCtrl.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('ThreadCtrlEx','ThreadCtrlEx.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('Thread','Thread.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('TimerMgrMS','TimerMgr(MS).cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)
+Program('TimerMgr','TimerMgr.cpp',
+	LIBS=libs,CPPFLAGS=cppflags,LINKFLAGS=linkflags,LIBPATH=libpath,CPPPATH=cpppath)    
