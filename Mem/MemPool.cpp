@@ -209,7 +209,7 @@ void* MemPool::AllocImpl(int len, bool bLock)
 			
 			MemNode tmpNode;
 			tmpNode.pStart = startNode.pOriStart;
-			tmpNode.nLen = len;
+			tmpNode.nLen = theLen;
 			if (m_pools.end() == m_pools.find(theLen)) {
 				vector<MemNode> vecNodes;
 				vecNodes.push_back(tmpNode);
@@ -217,19 +217,6 @@ void* MemPool::AllocImpl(int len, bool bLock)
 			}
 			else
 				m_pools.find(theLen)->second.push_back(tmpNode);
-			if(theLen>len){
-				int nNext = theLen - len;
-				MemNode tmpNext;
-				tmpNext.pStart = startNode.pOriStart + len;
-				tmpNext.nLen = nNext;
-				if (m_pools.end() == m_pools.find(nNext)) {
-					vector<MemNode> vecNodes;
-					vecNodes.push_back(tmpNext);
-					m_pools.insert(make_pair(nNext, vecNodes));
-				}
-				else
-					m_pools.find(nNext)->second.push_back(tmpNext);				
-			}
 		}
 		if (!flag) {
 			for (map<int, vector<MemNode> >::iterator it = m_pools.begin(); it != m_pools.end(); it++)
