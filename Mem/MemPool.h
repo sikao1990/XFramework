@@ -14,6 +14,9 @@ using namespace std;
 #define DEFAULTCOUNT	(3)
 #define SORTTIME		(60)		//内存碎片整理时间间隔-分钟
 
+//for debug code and track mem leak
+#define New(allocator,nSize)	(allocator)(nSize,__FILE__,__LINE__)
+
 class ThreadPri;
 class MemPool : public XMem	//线程安全,跨平台
 {
