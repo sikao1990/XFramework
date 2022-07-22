@@ -79,6 +79,10 @@ public:
     const std::map<unsigned char*, int>& GetMemoryUseInfo()const { return m_RecordInfo; }
 
     int GetMgrBlockCountLimit()const;
+
+    int GetUseCount()const;
+
+    void* GetManagementMemoryStartAddress()const { return m_pBegin; }
 public:
     void debug_print_init(bool bInit);
     void debug_for_UseInfo(const char* pExt);

@@ -155,6 +155,8 @@ void* XStaticAlloc::Alloc(int len)
         pCount[0] += 1;
     }
 
+    memset(tmpTag.ri_pStart, 0, tmpTag.ri_nLen);
+
     //解锁
 	return tmpTag.ri_pStart;
 }
@@ -369,6 +371,11 @@ bool XStaticAlloc::LoadBlockArea()
             itPrev = it;
         }
     }
+    if ( m_RecordInfo.empty() )
+    {
+        int nLen = m_pBegin + m_nTotalLen - m_pStart;
+        m_RangeSet.insert( make_pair(m_pStart,nLen) );
+    }
 
     return true;
 }
@@ -388,6 +395,16 @@ int XStaticAlloc::GetMgrBlockCountLimit()const
     if (NULL != pCount)
     {
         return pCount[1];
+    }
+    return -1;
+}
+
+int XStaticAlloc::GetUseCount()const
+{
+    unsigned short* pCount = (unsigned short*)m_pReserved;
+    if (NULL != pCount)
+    {
+        return pCount[0];
     }
     return -1;
 }
