@@ -51,7 +51,7 @@ Description:根据记录区域获得使用信息，目标实现共享内存访�
 class XStaticAlloc : public XMem
 {
 	struct RangeInfo{//记录区域信息单元
-		unsigned char*	ri_pStart;//使用指针更方便
+		unsigned char*	ri_pStart;//存储偏移量->以指针类型，则更兼容64位
 		unsigned int	ri_nLen;//内存管理的最大块数量
         RangeInfo(unsigned char* pStart = NULL, int nLen = 0) :ri_pStart(pStart), ri_nLen(nLen) {}
         bool operator==(const RangeInfo& info)const
@@ -71,7 +71,12 @@ class XStaticAlloc : public XMem
 public:
 	XStaticAlloc();
 	~XStaticAlloc();
-	bool Init(void* pStart,int nLen);
+    
+    //Return:
+    //  -1:failed!
+    //   0:first init and format
+    //   1:second init and load
+	int Init(void* pStart,int nLen);
 	void* Alloc(int len);
 	void Free(void* pStart);
 
@@ -83,6 +88,8 @@ public:
     int GetUseCount()const;
 
     void* GetManagementMemoryStartAddress()const { return m_pBegin; }
+
+    int GetNormalAvailableSize()const;
 public:
     void debug_print_init(bool bInit);
     void debug_for_UseInfo(const char* pExt);

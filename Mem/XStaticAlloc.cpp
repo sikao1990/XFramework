@@ -26,10 +26,11 @@ XStaticAlloc::~XStaticAlloc()
     m_nTotalLen = 0;
 }
 
-bool XStaticAlloc::Init(void* pStart,int nLen)
+int XStaticAlloc::Init(void* pStart,int nLen)
 {
+    int nRet = -1;
     if ( NULL == pStart || nLen <= 0 || NULL != m_pBegin || m_nTotalLen > 0 )
-        return false;
+        return nRet;
 
 	m_pBegin = (unsigned char*)pStart;
 	m_nTotalLen = nLen;
@@ -40,14 +41,16 @@ bool XStaticAlloc::Init(void* pStart,int nLen)
 
     if ( IsRawBlockArea() )//判断数据是否未初始化
     {
+        nRet = 0;
         FormatBlockArea();//格式化
     }
     else
     {
+        nRet = 1;
         LoadBlockArea();//读取
     }
 
-    return true;
+    return nRet;
 }
 
 void* XStaticAlloc::Alloc(int len)
@@ -148,6 +151,7 @@ void* XStaticAlloc::Alloc(int len)
     {
         RangeInfo* pInfo = (RangeInfo*)m_pRecordStart;
         pInfo[nCurIndex] = tmpTag;
+        pInfo[nCurIndex].ri_pStart = (unsigned char*)(tmpTag.ri_pStart - m_pBegin);//存储偏移量
 
         m_RecordMap.insert(make_pair(tmpTag.ri_pStart,nCurIndex));
         m_RecordInfo.insert(make_pair(tmpTag.ri_pStart, tmpTag.ri_nLen));
@@ -242,7 +246,14 @@ void XStaticAlloc::Free(void* pStart)
 
 bool XStaticAlloc::IsRawBlockArea()const
 {
-    return strncmp((char*)m_pBegin, STATIC_UNIQUE_SYMBOL,sizeof(STATIC_UNIQUE_SYMBOL));
+    bool bRawMem = true;
+    char szBuf[32] = {};
+
+    strncpy(szBuf, (char*)m_pBegin, MEM_IDENTIFIER_SIZE);
+    
+    if ( 0 == strcmp(szBuf, STATIC_UNIQUE_SYMBOL) )
+        bRawMem = false;
+    return bRawMem;
 }
 
 void XStaticAlloc::InitHeadInfo()
@@ -334,8 +345,8 @@ bool XStaticAlloc::LoadBlockArea()
             {
                 RangeInfo* pInfo = (RangeInfo*)m_pRecordStart;
                 RangeInfo tmpInfo = pInfo[nCurIndex];
-                m_RecordMap.insert( make_pair(tmpInfo.ri_pStart,nCurIndex) );
-                m_RecordInfo.insert( make_pair(tmpInfo.ri_pStart, tmpInfo.ri_nLen) );
+                m_RecordMap.insert( make_pair((int)tmpInfo.ri_pStart + m_pBegin,nCurIndex) );
+                m_RecordInfo.insert( make_pair((int)tmpInfo.ri_pStart + m_pBegin, tmpInfo.ri_nLen) );
             }
         }
     }
@@ -409,6 +420,11 @@ int XStaticAlloc::GetUseCount()const
     return -1;
 }
 
+int XStaticAlloc::GetNormalAvailableSize()const
+{
+    return m_pBegin + m_nTotalLen - m_pStart + *m_pRecordOffset;
+}
+
 void XStaticAlloc::debug_print_init(bool bInit)
 {
     char szBuf[32] = {};
@@ -470,7 +486,7 @@ void XStaticAlloc::debug_for_UseInfo(const char* pExt)
     }
     puts("");
 
-    printf("Count:%d Record Offset %d\n",pCount[0],*m_pRecordOffset);
+    printf("Count:%d Record Offset %d useable:%d\n",pCount[0],*m_pRecordOffset, GetNormalAvailableSize());
     printf("|=================================[%s]=================================================|\n", pExt);
 }
 

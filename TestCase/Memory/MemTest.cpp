@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "XStaticAlloc.h"
+#include <vector>
 
 /************************************************************************/
 /*@File Name         : MemTest.cpp
@@ -15,6 +16,14 @@
 /*
 [8][4][4][4][4]|[-2-][-96-][-12-]
 */
+
+
+//for Test11
+//#define TEST_LEN      (32*256)
+
+//与实际项目中结构提大小一致
+#define TEST_BLOCK     204
+
 
 //格式化和读取测试
 void Test1(XStaticAlloc& allotor1, XStaticAlloc& allotor2,char*pStart,int nLen)
@@ -293,6 +302,43 @@ void Test9(XStaticAlloc& allotor1, XStaticAlloc& allotor2, char*pStart, int nLen
     allotor2.debug_for_UseInfo("Free ps2 2");
 }
 
+//数据的一致性测试
+void Test10(XStaticAlloc& allotor1, XStaticAlloc& allotor2, char*pStart, int nLen)
+{
+    char* p1 = (char*)allotor1.Alloc(10);
+    strcpy(p1, "hello");
+    int n = p1 - allotor1.GetManagementMemoryStartAddress();
+    printf("nOffset:%d address:%p val:%s\n",n,p1,p1);
+    allotor1.debug_for_UseInfo("alloctor1");
+
+    allotor2.Refresh();
+    const std::map<unsigned char*, int>& infos = allotor2.GetMemoryUseInfo();
+    char* pBegin = (char*)allotor2.GetManagementMemoryStartAddress();
+    char* p2 = pBegin + n;
+    printf("alloc2 :%p val:%s val:%s\n",infos.begin()->first, infos.begin()->first,p2);
+    allotor1.debug_for_UseInfo("alloctor2");
+}
+
+//容量测试
+void Test11(XStaticAlloc& allotor1, XStaticAlloc& allotor2, char*pStart, int nLen)
+{
+    std::vector<char*> ArrayTest;
+    for (int i = 0; i < 30; i++)
+    {
+        char* p = (char*)allotor1.Alloc(TEST_BLOCK);
+        if (NULL != p)
+        {
+            ArrayTest.push_back(p);
+        }
+        else
+        {
+            printf("total Alloc:%d ,the next alloc failed!\n", ArrayTest.size());
+            break;
+        }
+    }
+    allotor1.debug_for_UseInfo("end");
+}
+
 int main()
 {
     char* pStart = (char*)malloc(TEST_LEN);
@@ -308,7 +354,7 @@ int main()
 #endif
     
     //挤压申请测试
-#if 0
+#if 1
     Test3(allotor1, allotor2, pStart, TEST_LEN);
 #endif
 
@@ -342,6 +388,15 @@ int main()
     Test9(allotor1, allotor2, pStart, TEST_LEN);
 #endif
 
+    //数据一致性测试
+#if 0
+    Test10(allotor1, allotor2, pStart, TEST_LEN);
+#endif
+
+    //容量测试
+#if 0
+    Test11(allotor1, allotor2, pStart, TEST_LEN);
+#endif
     free(pStart);
     system("pause");
     return 0;
