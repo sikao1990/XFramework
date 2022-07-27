@@ -30,8 +30,8 @@ public:
     //pSvrfunc the service entry point
     static void RegisterService(const char* pStrName,LPSERVICE_MAIN_FUNCTION pSvrfunc, pLogFunc logFuncPtr);
     //call at main function 
-    static bool InitInstance(int argc,char** argv);
-    static bool Create(const char* strSvrName,const char* svrShowName,const char* strDesc,unsigned dwStartStyle);
+    static bool InitInstance(const char* pszSvrName);
+    static bool Create(const char* strSvrName,const char* svrShowName,const char* strDesc,const char* strSvrCmdPath,unsigned dwStartStyle);
     static void Delete(const char* strSvrName);
 	//argv array was end of NULL
 	static bool Start(const char* strSvrName,int argc,char** argv);
@@ -57,8 +57,12 @@ public:
 protected:
 	static void SetExitCode(SERVICE_STATUS* pStatus, int nCode);
 	static void SetCurrentStatus(SERVICE_STATUS* pStatus, unsigned dwStatus);
-    virtual bool OnInitInstance(int argc,char** argv);
+
     virtual DWORD Handle(const char* strSvrName,DWORD dwControl,DWORD dwEventType,LPVOID lpEventData,SERVICE_STATUS* pStatus);
+    virtual void OnStop(const char* SvrName,DWORD dwEventType, LPVOID lpEventData);
+    virtual void OnPause(const char* SvrName, DWORD dwEventType, LPVOID lpEventData);
+    virtual void OnContinue(const char* SvrName, DWORD dwEventType, LPVOID lpEventData);
+    virtual void OnShutDown(const char* SvrName, DWORD dwEventType, LPVOID lpEventData);
 private:
     static DWORD WINAPI CtrlHandleEx(DWORD dwControl,DWORD dwEventType,LPVOID lpEventData,LPVOID lpContext);
 protected:
